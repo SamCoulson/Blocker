@@ -1,8 +1,10 @@
 #include "../include/CIntroScreen.h"
 
-CIntroScreen::CIntroScreen( CSDLGraphics *graphics ){
-	this->graphics = graphics;	
+CIntroScreen::CIntroScreen( CSDLGraphics& graphics ) : IScreen( graphics ){
+	
+	this->graphics = &graphics;	
 	introscreenframe = NULL;
+
 }
 
 CIntroScreen::~CIntroScreen(){
@@ -19,14 +21,14 @@ bool CIntroScreen::init(){
 	quit = false;
 }
 
-void CIntroScreen::input( SDL_Event *event ){
+void CIntroScreen::processEvents( SDL_Event *event ){
 	
 	if( event->type == SDL_KEYDOWN)
 	{
 		switch(event->key.keysym.sym)
 		{
 			case SDLK_SPACE:
-//				startGame = true;
+				quit = true;
 			break;
 			case SDLK_DOWN:	
 			break;

@@ -4,6 +4,7 @@
 #include "../include/CSDLGraphics.h"
 #include "../include/CGrid.h"
 #include "../include/CGamePiece.h"
+#include "../include/IScreen.h"
 
 // Should be a width of 10, least 22 with anoything aobve 20 hidden
 // according to http://tetris.wikia.com/wiki/Tetris_Guideline
@@ -20,18 +21,22 @@
 using namespace std;
 // Could put a method in Grid for clear grid then inherit this class from grid and add the clear grid method for this.
 
-class CGameArea{
+class CGameArea : public IScreen{
 public:
-	CGameArea( CSDLGraphics *graphics );
+	CGameArea( CSDLGraphics& graphics );
 	~CGameArea();
 
 	bool init();
 
-	void input( SDL_Event *event );
+	void processEvents( SDL_Event *event );
 	void update();
 	void render();
 
-	bool isQuit(){ return quit; }
+	bool requestQuit(){ return quit; }
+
+	bool isPaused(){ return paused; }
+
+	void cleanUp(){};
 
 	unsigned int m_GameSpeed;
 
@@ -53,6 +58,7 @@ private:
 	SDL_Surface *gametile;
 	
 	bool quit;
+	bool paused;
 	
 	CGamePiece* currentPiece;
 

@@ -13,5 +13,6 @@
 #include "CGamePiece.h"
 #include "CIntroScreen.h"
 #include "CGameScreen.h"
+#include "IScreen.h"
 
 #endif // INC_MAIN_H

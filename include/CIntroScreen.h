@@ -2,19 +2,23 @@
 #define INC_INTROSCREEN_H
 
 #include "../include/CSDLGraphics.h"
+#include "../include/IScreen.h"
 
-class CIntroScreen{
+class CIntroScreen : public IScreen{
 	public:
-		CIntroScreen( CSDLGraphics *graphics );
+		CIntroScreen( CSDLGraphics& );
 		~CIntroScreen();
 
 		bool init();
 
-		void input( SDL_Event *event );
+		void processEvents( SDL_Event *event );
 		void update();
 		void render();
 		
-		bool isQuit(){ return quit; }
+		bool requestQuit(){ return quit; }
+		bool isPaused(){ return false; }
+
+		void cleanUp(){};
 
 	private:
 		

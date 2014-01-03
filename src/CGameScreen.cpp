@@ -2,9 +2,10 @@
 
 using namespace std;
 
-CGameArea::CGameArea( CSDLGraphics *graphics ){
+CGameArea::CGameArea( CSDLGraphics& graphics ) : IScreen( graphics ){
 
-	this->graphics = graphics;
+	this->graphics = &graphics;
+
 	m_GameScore = 0;
 	m_GameSpeed = 300;
 
@@ -50,10 +51,12 @@ bool CGameArea::init(){
 
 	quit = false;
 
+	paused = false;
+
 	return true;
 }
 
-void CGameArea::input( SDL_Event *event )
+void CGameArea::processEvents( SDL_Event *event )
 {
 	if( event->type == SDL_KEYDOWN)
 	{
