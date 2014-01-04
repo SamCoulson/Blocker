@@ -7,19 +7,4 @@ Video mode set to 400 x 440 at 32 Bpp with flags SDL_SWSURFACE
 Trying to load ./images/IntroScreenFrame01.bmp
 Trying to load ./images/GameFrameRounded.bmp
 Trying to load ./images/TileSet.bmp
-Cannot set grid x and y flag, coordinates out of range: x = 16 y = 17
-Cannot set grid x and y flag, coordinates out of range: x = 16 y = 18
-Cannot set grid x and y flag, coordinates out of range: x = 16 y = 19
-Cannot set grid x and y flag, coordinates out of range: x = 16 y = 20
-Cannot set grid x and y flag, coordinates out of range: x = 16 y = 17
-Cannot set grid x and y flag, coordinates out of range: x = 16 y = 18
-Cannot set grid x and y flag, coordinates out of range: x = 16 y = 19
-Cannot set grid x and y flag, coordinates out of range: x = 16 y = 20
-Cannot set grid x and y flag, coordinates out of range: x = 18 y = 18
-Cannot set grid x and y flag, coordinates out of range: x = 17 y = 19
-Cannot set grid x and y flag, coordinates out of range: x = 18 y = 19
-Cannot set grid x and y flag, coordinates out of range: x = 17 y = 20
-Cannot set grid x and y flag, coordinates out of range: x = 18 y = 18
-Cannot set grid x and y flag, coordinates out of range: x = 17 y = 19
-Cannot set grid x and y flag, coordinates out of range: x = 18 y = 19
-Cannot set grid x and y flag, coordinates out of range: x = 17 y = 20
+Trying to load ./images/GameoverFrame00.bmp

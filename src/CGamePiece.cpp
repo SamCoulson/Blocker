@@ -6,7 +6,7 @@ CGamePiece::CGamePiece()
 	InitGamePieces();
 	
 	currentPosX = 4;
-	currentPosY = 1;
+	currentPosY = 0;
 
 	m_direction = 0;
 
@@ -28,56 +28,6 @@ CGamePiece::CGamePiece()
 CGamePiece::~CGamePiece()
 {
 
-}
-
-void CGamePiece::Move(int m_direction)
-{
-	switch(m_direction)
-	{
-/*	case RIGHT:
-		if((m_current_pos_x + pCurrentPiece->piece_width) < GAMEAREAWIDTH )
-		{
-			if(CGamePiece::Collide(RIGHT) != true)
-			{
-			// No collision allow piece move
-			m_current_pos_x++;
-			}
-		}
-		break;
-	case LEFT:
-		if( m_current_pos_x > 0 )
-		{
-			if( Collide( LEFT ) != true )
-			{
-				m_current_pos_x--;
-			}
-		}
-		break;
-	case DOWN:
-		// If not at bottom of game area
-		if( ( m_current_pos_y + pCurrentPiece->piece_height ) < GAMEAREAHEIGHT )
-		{
-			// If not collided with pieces on the way down
-			if( Collide(DOWN) != true )
-			{
-				m_current_pos_y++;
-			}
-			else
-			{
-				PutPiece(pCurrentPiece, m_current_pos_x, m_current_pos_y, STATIC, g_pGameGrid);
-				SpawnNewPiece();
-			}
-		}
-		else
-		{
-			PutPiece(pCurrentPiece, m_current_pos_x, m_current_pos_y, STATIC, gameGrid);
-			SpawnNewPiece();
-		}
-		
-		break;
-	default:
-		break;
-*/	}
 }
 
 

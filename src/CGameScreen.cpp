@@ -4,14 +4,7 @@ using namespace std;
 
 CGameArea::CGameArea( CSDLGraphics& graphics ) : IScreen( graphics ){
 
-	this->graphics = &graphics;
-
-	m_GameScore = 0;
-	m_GameSpeed = 300;
-
-	keyPressed = 0;
-
-	memset(score, 0, sizeof( score ));
+	this->graphics = &graphics;	
 }
 
 CGameArea::~CGameArea(){
@@ -33,7 +26,7 @@ CGameArea::~CGameArea(){
 bool CGameArea::init(){	
  	
 	// Create grid just for the game area 
-	gameGrid = new CGrid( GAMEAREAWIDTH, GAMEAREAHEIGHT, GAMEAREA_TILE_SIZE, GAMEAREA_TILE_SIZE, 20, 20 ); 
+	gameGrid = new CGrid( GAMEAREAWIDTH, GAMEAREAHEIGHT, GAMEAREA_TILE_SIZE, GAMEAREA_TILE_SIZE, 0, 0 ); 
 	if( gameGrid == NULL )
 	{
 		std::cout << "Cannot create GameGrid Object" << std::endl;
@@ -46,12 +39,23 @@ bool CGameArea::init(){
 	// Loadsprite sheet *add error checking*
 	gametile = graphics->loadImageFromFile("./images/TileSet.bmp", 255, 0, 255 );
 
+	gameoverframe = graphics->loadImageFromFile( "./images/GameoverFrame00.bmp", 255, 0, 255 );	
+
 	// Spawn first piece
 	currentPiece = new CGamePiece();	
 
 	quit = false;
 
 	paused = false;
+
+	gameScore = 0;
+	gameSpeed = 300;  // Specified in ms
+	gameLevel = 0;
+	keyPressed = 0;
+
+	gameOver = false;
+
+	memset( score, 0, sizeof( score ) );
 
 	return true;
 }
@@ -72,7 +76,7 @@ void CGameArea::processEvents( SDL_Event *event )
 				keyPressed = ROTATE;
 			break;
 			case SDLK_DOWN:
-				//CPlayerPiece.Move(DOWN);
+				keyPressed = DOWN;
 			break;
 			case SDLK_ESCAPE:
 				quit = true;
@@ -115,46 +119,53 @@ void CGameArea::update(){
 	unsigned int posX = currentPiece->getPosX();
 	unsigned int posY = currentPiece->getPosY();
 
+	// Detect full lines and later the game area as necessary before moving the current piece
+	isFullLine();
 
 	// Move as dictated by control or game
 	// Check for collision if collide then reset position and set as static
 
+	// Move piece according to input first
 	switch( keyPressed ){
 		case RIGHT:
-			//if( ( currentPiece->getPosX() + currentPiece->getWidth() ) < GAMEAREAWIDTH ){
 				currentPiece->setPosX( currentPiece->getPosX()+1 );
-			//}
 			break;
 		case LEFT:
-			//if( ( currentPiece->getPosX() ) > 0 ){
 				currentPiece->setPosX( currentPiece->getPosX()-1 );		
-			//}
 			break;
 		case ROTATE:
-			currentPiece->RotatePiece();
+				currentPiece->RotatePiece();
+			break;
+		case DOWN:
+				currentPiece->setPosY( currentPiece->getPosY()+1 );
 			break;
 		default:
 		break;
 	}
-
 	keyPressed = 0; // Reset keypressed	
+
+	// Automatically move piece down according to game speed
+	if( ( SDL_GetTicks() - elapsedTime ) > gameSpeed ){
+		// Progesss down at a rate according to game speed.	
+		currentPiece->setPosY( currentPiece->getPosY()+1 );
+		// Store elpased in order to be able to make a comparison next time at this point
+		elapsedTime = SDL_GetTicks();			
+	}	
 	
-	//if( ( currentPiece->getPosY() + currentPiece->getHeight() ) < GAMEAREAHEIGHT ){
-		currentPiece->setPosY( currentPiece->getPosY()+1 );	
-//	}else{
-		// staticMode = true;	
-//	}
-	
-	if( ( ( currentPiece->getPosX() + currentPiece->getWidth() ) > GAMEAREAWIDTH ) ||
-	( currentPiece->getPosX() > GAMEAREAWIDTH+1 ) ){
+	// Collision detection for sides	
+	if( ( ( currentPiece->getPosX() + currentPiece->getWidth() ) > GAMEAREAWIDTH-1 ) ||
+	( currentPiece->getPosX() < 1 ) || collide() ){
 		// Collided restore old position	
-		currentPiece->setPosY( posX );
-	}else if( ( currentPiece->getPosY() + currentPiece->getHeight() ) > GAMEAREAHEIGHT ){
-		currentPiece->setPosX( posY );
-		staticMode = true;	
+		currentPiece->setPosX( posX );
+	}	
+	
+	// Collision detection for bottom of area and other blocks	
+	if( ( ( currentPiece->getPosY() + currentPiece->getHeight() ) > GAMEAREAHEIGHT-1 ) || collide() ) {
+		currentPiece->setPosY( posY );
+		staticMode = true;
 	}
 
-
+	// Prepare the block to be set into the game area as static or not
 	unsigned int blockType = 0;
 	if( staticMode ){
 		blockType = currentPiece->getColor() + 100;	
@@ -178,54 +189,37 @@ void CGameArea::update(){
 		current_block_piece++;
 		}
 	}
-	// Block must be at bottom of screen so set the cells it occupies to static	
+
+	if( isGameOver() ){
+		//g_bPaused = true;
+		gameOver = true;
+	}
+
+	// If in static mode then block is being drawn in to gris which must mean a new piece is needed.	
 	// Spawn new block
 	if( staticMode == true ){
 		delete currentPiece;
 		currentPiece = new CGamePiece();	
 	}
-
-	// Doesnt because piece is never spawned beyond this point
-	//if( ( CPlayerPiece.GetPos_y() + CPlayerPiece.pCurrentPiece->piece_height ) < 2 )
-	//	g_bPaused = true;
-
-	// Can alter this to change game speed is also the continual movement heart beat
-	//if( GetTickCount() - start_time > CPlayArea.m_GameSpeed) 
-	//{	
-	//	CPlayerPiece.Move(DOWN);
-	//	start_time=GetTickCount();
-	//}
+	
 	// Increase the speed if next level has been reached
-	//CPlayArea.CheckandSetLevel();
-
-	// Draw piece for every frame both lines
-	//CPlayerPiece.PutPiece(CPlayerPiece.pCurrentPiece, CPlayerPiece.GetPos_x(), CPlayerPiece.GetPos_y(), ISBLOCKPIECE, g_pGameGrid);
-
+	checkAndSetLevel();
+	
 	// Put pre-piece
 	//CPlayerPiece.PutPiece(CPlayerPiece.pPrePiece, 17, 23, ISBLOCKPIECE, g_pScreenGrid);
 
 	// Reset pre-piece area *doesnt work properly*
 	//g_pScreenGrid->SetSDLGridBitmapRepeated(g_pScreenGrid->GetSDLGridXY(15, 11).x, g_pScreenGrid->GetSDLGridXY(15, 11).y, 
 	//	g_pScreenGrid->GetSDLGridXY(20, 17).x, g_pScreenGrid->GetSDLGridXY(20, 17).y, NULL, NULL);
-
-	// Are any lines full if so adjust blocks
-	//CPlayArea.IsFullLine();
-
-	//if(CPlayArea.IsGameOver() == 1)
-	//{
-	//	g_bPaused = true;
-	//	g_bGameOver = true;
-	//}
-	
+		
 }
 
 void CGameArea::render(){
+
+	// NOTE: Could make this render according to states	
 	
 	// Clear screen
 	graphics->clearScreen( 0, 0, 0 );
-
-	// Draw game frame	
-	graphics->draw( 0 ,0 , gameframe, SDL_GetVideoSurface(), NULL );
 	
 	// Draw all the blocks in the game area	
 	SDL_Rect redTile;
@@ -293,16 +287,18 @@ void CGameArea::render(){
 			}
 		}
 	}
+
+	// Draw game frame	
+	graphics->draw( 0 ,0 , gameframe, SDL_GetVideoSurface(), NULL );	
 	
-	//Draw score  
-	//g_pScreenGrid->SetGridSDLImage(15, 3, g_pResource->Text(CPlayArea.GetScore(), color));
+	//Draw score and level number 
+	graphics->drawText( GetScore(), 270, 40, "tunga.ttf", 255, 0, 0  );
 	
-	//g_pScreenGrid->SetGridSDLImage(15, 10, g_pResource->Text(CPlayArea.GetLevel(), color));
-	
-	//if(g_bGameOver == true)
-	//{
-		//sdlObj.DrawImage(g_pScreenGrid->GetSDLGridXY(0,10).x, g_pScreenGrid->GetSDLGridXY(0,10).y, gameoverframe, sdlObj.screenSurface, NULL);
-	//}
+	graphics->drawText( GetLevel(), 270, 170, "tunga.ttf", 255, 0, 0  );	
+
+	if( gameOver == true ){
+		graphics->draw( 5, 100, gameoverframe, SDL_GetVideoSurface(), NULL);
+	}			
 
 	// Show the screen
 	// Or can use update rects
@@ -311,69 +307,63 @@ void CGameArea::render(){
 }
 
 
-void CGameArea::CheckandSetLevel()
+void CGameArea::checkAndSetLevel()
 {
-	if( m_GameScore >= 1000 )
+	if( gameScore >= 1000 )
 	{
-		m_GameSpeed = 250;
-		m_GameLevel = 1;
+		gameSpeed = 250;
+		gameLevel = 1;
 	}
-	if( m_GameScore >= 2000 )
+	if( gameScore >= 2000 )
 	{
-		m_GameSpeed = 200;
-		m_GameLevel = 2;
+		gameSpeed = 200;
+		gameLevel = 2;
 	}
-	if( m_GameScore >= 3000 )
+	if( gameScore >= 3000 )
 	{
-		m_GameSpeed = 150;
-		m_GameLevel = 3;
+		gameSpeed = 150;
+		gameLevel = 3;
 	}
-	if( m_GameScore >= 4000 )
+	if( gameScore >= 4000 )
 	{
-		m_GameSpeed = 100;
-		m_GameLevel = 4;
+		gameSpeed = 100;
+		gameLevel = 4;
 	}
-	if( m_GameScore >= 5000 )
+	if( gameScore >= 5000 )
 	{
-		m_GameSpeed = 50;
-		m_GameLevel = 5;
+		gameSpeed = 50;
+		gameLevel = 5;
 	}
 }
 
 const char* CGameArea::GetScore()
 { 
-	ConvertScoretoChar();
+	sprintf( this->score,"%05d", gameScore );
 	return score;
 }
 
 int CGameArea::GetIntScore()
 {
-	return m_GameScore;
+	return gameScore;
 }
 
 const char* CGameArea::GetLevel()
 {
-	sprintf(this->level,"%d", m_GameLevel);
-	
+	sprintf( this->level,"%02d", gameLevel );
 	return level;
 }
 
-const char* CGameArea::ConvertScoretoChar()
+bool CGameArea::isGameOver()
 {
-	sprintf(this->score,"%d", m_GameScore);
-	
-	return score;
-}
-
-int CGameArea::IsGameOver()
-{
-	int widthindex = 0;
-	for(widthindex = 0; widthindex < GAMEAREAWIDTH; widthindex++)
-	{
-//		if(g_pGameGrid->GetGridStatus(widthindex, 1) == STATIC)
-			return 1;
+	// Scan the top line	
+	for( int widthindex = 1; widthindex < GAMEAREAWIDTH-1; widthindex++ ){
+		// If there is a static block in this row then game over
+		if( gameGrid->getTileFlag( widthindex, 1 )  < 100 ){
+			return true;
+		}
 	}
-	return 0;
+
+	return false;
 }
 
 // Resets all logical and image values for grid blocks that are the player piece to clear.  Ready for next frame. 
@@ -409,111 +399,76 @@ void CGameArea::ClearGrid()
 }
 
 // Scans whole grid for full lines
-int CGameArea::IsFullLine()
+void CGameArea::isFullLine()
 {
 	int column_index, row_index = 0;
 
-	// Iterate from top to bottom
-	for(row_index = 0; row_index < GAMEAREAHEIGHT; row_index++)
+	// Iterate from top row to bottom row
+	for( row_index = 1; row_index < GAMEAREAHEIGHT - 1; row_index++ )
 	{
-		// Iterate from left to right 
-		for(column_index = 0; column_index < GAMEAREAWIDTH; column_index++)
-		{
-			// If current block is Static check to see if you reach the end of the row if so full line
-/*			if(g_pGameGrid->GetGridStatus(column_index, row_index) == STATIC)
-			{
-				// Column index reached the width of the game area a line must be full
-				if(column_index == GAMEAREAWIDTH - 1)
-				{
-					// Delete line
-					OnLineFull(row_index);
-				}
-			}
-			else
-			{
-				// On first non static block stop looking
-				break;
-			}
-*/		}
+		// Check each block in line
+		if( ( gameGrid->getTileFlag( 1, row_index ) > 100 ) && 
+		( gameGrid->getTileFlag( 2, row_index ) > 100 ) &&
+		( gameGrid->getTileFlag( 3, row_index ) > 100 ) &&
+		( gameGrid->getTileFlag( 4, row_index ) > 100 ) &&
+		( gameGrid->getTileFlag( 5, row_index ) > 100 ) &&
+		( gameGrid->getTileFlag( 6, row_index ) > 100 ) &&
+		( gameGrid->getTileFlag( 7, row_index ) > 100 ) &&
+		( gameGrid->getTileFlag( 8, row_index ) > 100 ) &&
+		( gameGrid->getTileFlag( 9, row_index ) > 100 ) &&
+		( gameGrid->getTileFlag( 10, row_index ) > 100 ) ){
+			// Increment score
+			gameScore += 50;		
+			//  Remove line and move all blocks above down one
+			removeLine( row_index );
+		}
 	}
-	// Nothing found
-	return 1;
 }
 
 // Deletes the row and moves all the rows above down one and increase score.
-int CGameArea::OnLineFull(int iFullRowIndex)
+void CGameArea::removeLine( int iFullRowIndex )
 {
-	
 	int row_index, column_index = 0;
 
 	// First delete the row
-	for(column_index = 0; column_index < GAMEAREAWIDTH; column_index++)
-	{
-//		g_pGameGrid->SetGridStatus(column_index, iFullRowIndex, CLEAR);
-//		g_pGameGrid->SetGridSDLImage(column_index, iFullRowIndex, NULL, NULL);
+	for(column_index = 0; column_index < GAMEAREAWIDTH; column_index++){
+		gameGrid->setTileFlag( column_index, iFullRowIndex, CLEAR );	
 	}
+
 	column_index = 0;
+
 	// Iterate up through rows and set all static pieces to plus 1 on the y coord
-	for(row_index = iFullRowIndex; row_index > 0; row_index--)
+	for( row_index = iFullRowIndex; row_index > 1; row_index-- )
 	{
-		for(column_index = 0; column_index < GAMEAREAWIDTH; column_index++)
+		for( column_index = 1; column_index < GAMEAREAWIDTH-1; column_index++ )
 		{
 			// If current block is static shift it down one.
-/*			if(g_pGameGrid->GetGridStatus(column_index, row_index) == STATIC)
+			if( gameGrid->getTileFlag( column_index, row_index ) > 100 )
 			{
-				
-				// If its the very bottom row dont draw blocks. They'll be out of the screen. Else shift it down one.
-				if(row_index != GAMEAREAHEIGHT)
-				{
+				// If its the very bottom row just set as clear, else shift it down one.
+				if( row_index != GAMEAREAHEIGHT-1 ){
 
-				// Set the space below to static
-				g_pGameGrid->SetGridStatus(column_index, row_index + 1, STATIC);
-
-				// Get the color and image from above and set the next row down to the same
-				g_pGameGrid->SetGridSDLImage(column_index, row_index + 1, 
-				g_pGameGrid->GetGridSDLClipRect(column_index, row_index), 
-				g_pGameGrid->GetGridSDLImage(column_index, row_index));	
-
-				// Clear its original location
-				g_pGameGrid->SetGridStatus(column_index, row_index, CLEAR);
-				g_pGameGrid->SetGridSDLImage(column_index, row_index, NULL, NULL);
+					// Set the space below to static
+					gameGrid->setTileFlag( column_index, row_index + 1, 
+							gameGrid->getTileFlag( column_index, row_index ) );
+	
+					// Clear its original location
+					gameGrid->setTileFlag( column_index, row_index, CLEAR );
+					
 				}
 			}
-*/		}	
+		}	
 	}
-	// Increment score
-	m_GameScore += 100;
 	
-	return 0;
 }
 
-// Checks if piece colides in given m_direction. Returns true or flase.
-bool CGameArea::collide( int m_direction ){
+// Checks if piece colides with any static blocks in the game area
+bool CGameArea::collide(){
 
-	unsigned int iWidthIndex = 0, iHeightIndex = 0;
-	int curPos_x, curPos_y = 0;
+	unsigned int iWidthIndex = 0, iHeightIndex = 0;	
 	int currentBlockPiece = 0;
 
 	bool collide = false;
-
-	//Save current positions
-	curPos_x = currentPiece->getPosX();
-	curPos_y = currentPiece->getPosY();
-
-	// Modify according to m_direction
-	switch(m_direction)
-	{
-		case LEFT:
-			currentPiece->setPosX( currentPiece->getPosX() - 1);
-			break;
-		case RIGHT: 
-			currentPiece->setPosX( currentPiece->getPosX() + 1);
-			break;
-		case DOWN:
-			currentPiece->setPosY( currentPiece->getPosY() + 1 );
-		default:
-			break;
-	}
 	
 	// Loop through piece 
 	// Check specific block
@@ -523,8 +478,8 @@ bool CGameArea::collide( int m_direction ){
 		for( iWidthIndex = 0;  iWidthIndex < currentPiece->getWidth(); iWidthIndex++ )
 			{
 				if( ( currentPiece->getPieceData( currentBlockPiece ) == '1' )
-				&&( gameGrid->getTileFlag( currentPiece->getPosX() + currentPiece->getWidth(), 
-						currentPiece->getPosY() + currentPiece->getHeight() ) > 100 ))
+				&&( gameGrid->getTileFlag( currentPiece->getPosX() + iWidthIndex, 
+						currentPiece->getPosY() + iHeightIndex ) > 100 ))
 				{
 					collide = true;	
 				}
@@ -532,10 +487,7 @@ bool CGameArea::collide( int m_direction ){
 			}
 		
 	}
-	//Return values to original 
-	currentPiece->setPosX( curPos_x );
-	currentPiece->setPosY( curPos_y );
-
+	
 	if( collide == true )
 	{
 		return true;

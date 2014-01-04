@@ -35,9 +35,7 @@ public:
 
 	void SpawnNewPiece(void);
 	void RotatePiece();
-	void Move(int m_direction);
-	bool Collide(int m_direction);
-
+	
 	unsigned int getPosX(){ return currentPosX; }
 	unsigned int getPosY(){ return currentPosY; }
 	

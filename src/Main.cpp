@@ -48,6 +48,7 @@ int main( int argc, char* args[])
 
 	currentScreen = screens.back();
 
+	// Game loop
 	while( gameQuit != true)
 	{
 		if( isInitialised == false ){

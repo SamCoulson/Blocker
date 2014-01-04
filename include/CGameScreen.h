@@ -9,8 +9,8 @@
 // Should be a width of 10, least 22 with anoything aobve 20 hidden
 // according to http://tetris.wikia.com/wiki/Tetris_Guideline
 
-#define GAMEAREAWIDTH 10
-#define GAMEAREAHEIGHT 20 
+#define GAMEAREAWIDTH 12
+#define GAMEAREAHEIGHT 22 
 #define GAMEAREA_TILE_SIZE 20
 
 #define RIGHT 10
@@ -36,19 +36,11 @@ public:
 
 	bool isPaused(){ return paused; }
 
-	void cleanUp(){};
+	void cleanUp(){};	
 
-	unsigned int m_GameSpeed;
+	void ClearGrid();		
 
-	void ClearGrid();
-	int IsFullLine();
-	int OnLineFull(int iFullRowIndex);
-	int IsGameOver();
-	const char* GetScore();
-	int GetIntScore();
-	void CheckandSetLevel();
-	const char* GetLevel();
-
+	
 private:
 
 	CSDLGraphics *graphics;
@@ -56,6 +48,7 @@ private:
 	
 	SDL_Surface *gameframe;
 	SDL_Surface *gametile;
+	SDL_Surface *gameoverframe;
 	
 	bool quit;
 	bool paused;
@@ -64,17 +57,31 @@ private:
 
 	unsigned int keyPressed;
 
+	unsigned int gameSpeed;
+
 	// Char buffer for score output
 	char score[10];
 	char level[2];
-	// Write numerical score to char buffer
-	const char* ConvertScoretoChar();
+
+	const char* GetScore();
+
+	int GetIntScore();	
+
+	const char* GetLevel();
+	
+	bool gameOver;
+
 	// Score storage
-	int m_GameScore;
-	int m_GameLevel;
+	int gameScore;
+	int gameLevel;
 
-	bool collide( int m_direction );
+	int elapsedTime;
 
+	bool collide();
+	void isFullLine();
+	void removeLine( int iFullRowIndex );
+	void checkAndSetLevel();
+	bool isGameOver();
 };
 
 #endif // INC_CGAMEAREA_H
