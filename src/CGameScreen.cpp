@@ -109,102 +109,102 @@ void CGameArea::processEvents( SDL_Event *event )
 
 void CGameArea::update(){
 	
-	// Set all ISGAMEBLOCK in logical game grid to CLEAR.  This clears the grid of the old curgamepiece position, else it will be drawn also.
-	// Also clears the next piece box.
-	bool staticMode = false;
-
-	ClearGrid();
-
-	// Save current position and rotation
-	unsigned int posX = currentPiece->getPosX();
-	unsigned int posY = currentPiece->getPosY();
-
-	// Detect full lines and later the game area as necessary before moving the current piece
-	isFullLine();
-
-	// Move as dictated by control or game
-	// Check for collision if collide then reset position and set as static
-
-	// Move piece according to input first
-	switch( keyPressed ){
-		case RIGHT:
-				currentPiece->setPosX( currentPiece->getPosX()+1 );
-			break;
-		case LEFT:
-				currentPiece->setPosX( currentPiece->getPosX()-1 );		
-			break;
-		case ROTATE:
-				currentPiece->RotatePiece();
-			break;
-		case DOWN:
-				currentPiece->setPosY( currentPiece->getPosY()+1 );
-			break;
-		default:
-		break;
-	}
-	keyPressed = 0; // Reset keypressed	
-
-	// Automatically move piece down according to game speed
-	if( ( SDL_GetTicks() - elapsedTime ) > gameSpeed ){
-		// Progesss down at a rate according to game speed.	
-		currentPiece->setPosY( currentPiece->getPosY()+1 );
-		// Store elpased in order to be able to make a comparison next time at this point
-		elapsedTime = SDL_GetTicks();			
-	}	
-	
-	// Collision detection for sides	
-	if( ( ( currentPiece->getPosX() + currentPiece->getWidth() ) > GAMEAREAWIDTH-1 ) ||
-	( currentPiece->getPosX() < 1 ) || collide() ){
-		// Collided restore old position	
-		currentPiece->setPosX( posX );
-	}	
-	
-	// Collision detection for bottom of area and other blocks	
-	if( ( ( currentPiece->getPosY() + currentPiece->getHeight() ) > GAMEAREAHEIGHT-1 ) || collide() ) {
-		currentPiece->setPosY( posY );
-		staticMode = true;
-	}
-
-	// Prepare the block to be set into the game area as static or not
-	unsigned int blockType = 0;
-	if( staticMode ){
-		blockType = currentPiece->getColor() + 100;	
-	}else{
-		blockType = currentPiece->getColor();	
-	}
-
-	unsigned int current_block_piece = 0;		
-
-	// Iterate through the current block data and draw those block that are visible
-	for( int row_index = 0; row_index < currentPiece->getHeight(); row_index++)
-	{
-		for( int column_index = 0; column_index < currentPiece->getWidth(); column_index++)
-		{
-			if( currentPiece->getPieceData( current_block_piece ) == '1')
-			{
-				gameGrid->setTileFlag( currentPiece->getPosX() + column_index, 
-						currentPiece->getPosY() + row_index, blockType );
-			}
-		// Next block piece in block array
-		current_block_piece++;
-		}
-	}
-
 	if( isGameOver() ){
-		//g_bPaused = true;
+		paused = true;
 		gameOver = true;
-	}
+	}else{
 
-	// If in static mode then block is being drawn in to gris which must mean a new piece is needed.	
-	// Spawn new block
-	if( staticMode == true ){
-		delete currentPiece;
-		currentPiece = new CGamePiece();	
+		// Set all ISGAMEBLOCK in logical game grid to CLEAR.  This clears the grid of the old curgamepiece position, else it will be drawn also.
+		// Also clears the next piece box.
+		bool staticMode = false;
+
+		ClearGrid();
+
+		// Save current position and rotation
+		unsigned int posX = currentPiece->getPosX();
+		unsigned int posY = currentPiece->getPosY();
+
+		// Detect full lines and later the game area as necessary before moving the current piece
+		isFullLine();
+
+		// Move as dictated by control or game
+		// Check for collision if collide then reset position and set as static
+
+		// Move piece according to input first
+		switch( keyPressed ){
+			case RIGHT:
+				currentPiece->setPosX( currentPiece->getPosX()+1 );
+				break;
+			case LEFT:
+				currentPiece->setPosX( currentPiece->getPosX()-1 );		
+				break;
+			case ROTATE:
+				currentPiece->RotatePiece();
+				break;
+			case DOWN:
+				currentPiece->setPosY( currentPiece->getPosY()+1 );
+				break;
+			default:
+			break;
+		}
+		keyPressed = 0; // Reset keypressed	
+
+		// Automatically move piece down according to game speed
+		if( ( SDL_GetTicks() - elapsedTime ) > gameSpeed ){
+			// Progesss down at a rate according to game speed.	
+			currentPiece->setPosY( currentPiece->getPosY()+1 );
+			// Store elpased in order to be able to make a comparison next time at this point
+			elapsedTime = SDL_GetTicks();			
+		}	
+		
+		// Collision detection for sides	
+		if( ( ( currentPiece->getPosX() + currentPiece->getWidth() ) > GAMEAREAWIDTH-1 ) ||
+		( currentPiece->getPosX() < 1 ) || collide() ){
+			// Collided restore old position	
+			currentPiece->setPosX( posX );
+		}	
+		
+		// Collision detection for bottom of area and other blocks	
+		if( ( ( currentPiece->getPosY() + currentPiece->getHeight() ) > GAMEAREAHEIGHT-1 ) || collide() ) {
+			currentPiece->setPosY( posY );
+			staticMode = true;
+		}
+
+		// Prepare the block to be set into the game area as static or not
+		unsigned int blockType = 0;
+		if( staticMode ){
+			blockType = currentPiece->getColor() + 100;	
+		}else{
+			blockType = currentPiece->getColor();	
+		}
+
+		unsigned int current_block_piece = 0;		
+
+		// Iterate through the current block data and set those block for drawing into the grid that are visible
+		for( int row_index = 0; row_index < currentPiece->getHeight(); row_index++)
+		{
+			for( int column_index = 0; column_index < currentPiece->getWidth(); column_index++)
+			{
+				if( currentPiece->getPieceData( current_block_piece ) == '1')
+				{
+					gameGrid->setTileFlag( currentPiece->getPosX() + column_index, 
+							currentPiece->getPosY() + row_index, blockType );
+				}
+			// Next block piece in block array
+			current_block_piece++;
+			}
+		}	
+
+		// If in static mode then block is being drawn into grid which must mean a new piece is needed.	
+		// Spawn new block
+		if( staticMode == true ){
+			delete currentPiece;
+			currentPiece = new CGamePiece();	
+		}
+		
+		// Increase the speed if next level has been reached
+		checkAndSetLevel();
 	}
-	
-	// Increase the speed if next level has been reached
-	checkAndSetLevel();
-	
 	// Put pre-piece
 	//CPlayerPiece.PutPiece(CPlayerPiece.pPrePiece, 17, 23, ISBLOCKPIECE, g_pScreenGrid);
 
@@ -220,7 +220,7 @@ void CGameArea::render(){
 	
 	// Clear screen
 	graphics->clearScreen( 0, 0, 0 );
-	
+		
 	// Draw all the blocks in the game area	
 	SDL_Rect redTile;
 	redTile.x = 40;
@@ -259,8 +259,7 @@ void CGameArea::render(){
 			case RED:
 			case STATIC_RED:					
 				graphics->draw( gameGrid->getXY(i, j)->x, gameGrid->getXY( i, j)->y, 
-						gametile, SDL_GetVideoSurface(), &redTile );
-				
+						gametile, SDL_GetVideoSurface(), &redTile );	
 				break;
 			case BLUE:
 			case STATIC_BLUE:
@@ -290,16 +289,17 @@ void CGameArea::render(){
 
 	// Draw game frame	
 	graphics->draw( 0 ,0 , gameframe, SDL_GetVideoSurface(), NULL );	
-	
+
+	// Draw the game over window if the player has lost *Must be drawn before text, could be a bug* 	
+	if( gameOver == true ){
+		graphics->draw( 5, 100, gameoverframe, SDL_GetVideoSurface(), NULL);
+	}
+
 	//Draw score and level number 
 	graphics->drawText( GetScore(), 270, 40, "tunga.ttf", 255, 0, 0  );
 	
 	graphics->drawText( GetLevel(), 270, 170, "tunga.ttf", 255, 0, 0  );	
-
-	if( gameOver == true ){
-		graphics->draw( 5, 100, gameoverframe, SDL_GetVideoSurface(), NULL);
-	}			
-
+	
 	// Show the screen
 	// Or can use update rects
 	graphics->update();
@@ -358,7 +358,7 @@ bool CGameArea::isGameOver()
 	// Scan the top line	
 	for( int widthindex = 1; widthindex < GAMEAREAWIDTH-1; widthindex++ ){
 		// If there is a static block in this row then game over
-		if( gameGrid->getTileFlag( widthindex, 1 )  < 100 ){
+		if( gameGrid->getTileFlag( widthindex, 2 ) > 100 ){
 			return true;
 		}
 	}

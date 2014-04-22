@@ -6,7 +6,7 @@
 #include "../include/CGamePiece.h"
 #include "../include/IScreen.h"
 
-// Should be a width of 10, least 22 with anoything aobve 20 hidden
+// Should be a width of 10, least 22 with anything above 20 hidden
 // according to http://tetris.wikia.com/wiki/Tetris_Guideline
 
 #define GAMEAREAWIDTH 12
@@ -39,7 +39,6 @@ public:
 	void cleanUp(){};	
 
 	void ClearGrid();		
-
 	
 private:
 

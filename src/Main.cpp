@@ -9,7 +9,7 @@
 
 int main( int argc, char* args[])
 {
-	// Declare objects
+	// Global objects
 	CSDLGraphics sdlgraphics;
 	CSDLGraphics* graphics;
 	
@@ -46,11 +46,13 @@ int main( int argc, char* args[])
 	bool isInitialised = false;
 	startTime = SDL_GetTicks();
 
+	// Load up the last screen in the screens vector, the introscreen.
 	currentScreen = screens.back();
-
+	
 	// Game loop
 	while( gameQuit != true)
 	{
+		// The the screen has not been initialised then load it up.
 		if( isInitialised == false ){
 			if( currentScreen->init() == false ){
 				cout << "Failed to initalise screen!" << endl;
@@ -59,6 +61,7 @@ int main( int argc, char* args[])
 			isInitialised = true;	
 		}	
 
+		// Grab keyboard and system events
 		SDL_PollEvent( &event );
 	
 		// Get the time at the beginning of the frame	
