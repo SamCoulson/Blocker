@@ -43,7 +43,6 @@ void CGamePiece::SpawnNewPiece()
 		// Set the piece index to current piece
 		this->m_current_piece = m_prepiece;
 	}
-
 	
 	// Set the pre-piece pointer to point to the next game piece, this is for the next piece box
 	pPrePiece = &GamePieces[ m_prepiece ][ m_current_rotation ];

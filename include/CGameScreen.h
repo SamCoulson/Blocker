@@ -48,6 +48,7 @@ private:
 	SDL_Surface *gameframe;
 	SDL_Surface *gametile;
 	SDL_Surface *gameoverframe;
+	SDL_Surface *pausedframe;
 	
 	bool quit;
 	bool paused;

@@ -8,3 +8,4 @@ Trying to load ./images/IntroScreenFrame01.bmp
 Trying to load ./images/GameFrameRounded.bmp
 Trying to load ./images/TileSet.bmp
 Trying to load ./images/GameoverFrame00.bmp
+Trying to load ./images/TopScoreScreenFrame.bmp

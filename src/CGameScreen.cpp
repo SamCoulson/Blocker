@@ -40,7 +40,7 @@ bool CGameArea::init(){
 	gametile = graphics->loadImageFromFile("./images/TileSet.bmp", 255, 0, 255 );
 
 	gameoverframe = graphics->loadImageFromFile( "./images/GameoverFrame00.bmp", 255, 0, 255 );	
-
+	
 	// Spawn first piece
 	currentPiece = new CGamePiece();	
 
@@ -82,14 +82,14 @@ void CGameArea::processEvents( SDL_Event *event )
 				quit = true;
 			break;
 			case SDLK_F11:
-				/*if(g_bPaused == true)
+				if( paused == true )
 				{
-					g_bPaused = false;
+					paused = false;
 				}
 				else
 				{
-					g_bPaused = true;
-				}*/
+					paused = true;
+				}
 			break;
 			default:
 				break;
@@ -112,6 +112,9 @@ void CGameArea::update(){
 	if( isGameOver() ){
 		paused = true;
 		gameOver = true;
+		quit = true;
+	}else if( isPaused() ){
+		paused = true;	
 	}else{
 
 		// Set all ISGAMEBLOCK in logical game grid to CLEAR.  This clears the grid of the old curgamepiece position, else it will be drawn also.
@@ -145,18 +148,17 @@ void CGameArea::update(){
 				currentPiece->setPosY( currentPiece->getPosY()+1 );
 				break;
 			default:
+				// Automatically move piece down according to game speed
+				if( ( SDL_GetTicks() - elapsedTime ) > gameSpeed ){
+					// Progesss down at a rate according to game speed.	
+					currentPiece->setPosY( currentPiece->getPosY()+1 );
+					// Store elpased in order to be able to make a comparison next time at this point
+					elapsedTime = SDL_GetTicks();			
+				}
 			break;
 		}
 		keyPressed = 0; // Reset keypressed	
-
-		// Automatically move piece down according to game speed
-		if( ( SDL_GetTicks() - elapsedTime ) > gameSpeed ){
-			// Progesss down at a rate according to game speed.	
-			currentPiece->setPosY( currentPiece->getPosY()+1 );
-			// Store elpased in order to be able to make a comparison next time at this point
-			elapsedTime = SDL_GetTicks();			
-		}	
-		
+	
 		// Collision detection for sides	
 		if( ( ( currentPiece->getPosX() + currentPiece->getWidth() ) > GAMEAREAWIDTH-1 ) ||
 		( currentPiece->getPosX() < 1 ) || collide() ){
@@ -206,11 +208,11 @@ void CGameArea::update(){
 		checkAndSetLevel();
 	}
 	// Put pre-piece
-	//CPlayerPiece.PutPiece(CPlayerPiece.pPrePiece, 17, 23, ISBLOCKPIECE, g_pScreenGrid);
+	// CPlayerPiece.PutPiece(CPlayerPiece.pPrePiece, 17, 23, ISBLOCKPIECE, g_pScreenGrid);
 
 	// Reset pre-piece area *doesnt work properly*
-	//g_pScreenGrid->SetSDLGridBitmapRepeated(g_pScreenGrid->GetSDLGridXY(15, 11).x, g_pScreenGrid->GetSDLGridXY(15, 11).y, 
-	//	g_pScreenGrid->GetSDLGridXY(20, 17).x, g_pScreenGrid->GetSDLGridXY(20, 17).y, NULL, NULL);
+	// g_pScreenGrid->SetSDLGridBitmapRepeated(g_pScreenGrid->GetSDLGridXY(15, 11).x, g_pScreenGrid->GetSDLGridXY(15, 11).y, 
+	// g_pScreenGrid->GetSDLGridXY(20, 17).x, g_pScreenGrid->GetSDLGridXY(20, 17).y, NULL, NULL);
 		
 }
 
@@ -293,6 +295,10 @@ void CGameArea::render(){
 	// Draw the game over window if the player has lost *Must be drawn before text, could be a bug* 	
 	if( gameOver == true ){
 		graphics->draw( 5, 100, gameoverframe, SDL_GetVideoSurface(), NULL);
+	}
+
+	if( paused == true ){
+		graphics->drawText( "Paused", 80, 140, "tunga.ttf", 255, 0, 0  );
 	}
 
 	//Draw score and level number 

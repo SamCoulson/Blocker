@@ -3,6 +3,7 @@
 
 #include "../include/CSDLGraphics.h"
 #include "../include/IScreen.h"
+#include <vector>
 
 class CHighScoreScreen : public IScreen{
 
@@ -16,28 +17,32 @@ class CHighScoreScreen : public IScreen{
 		void render();
 		void cleanUp(){};
 
-		bool requestQuit(){};
+		bool requestQuit(){ return quit; }
 		bool isPaused(){};
 
 	private:
 		
 		CSDLGraphics* graphics;
-
-		SDL_Surface *gameoverframe;
+	
 		SDL_Surface *topscoreframe;
 
-		void loadTopScoresFromFile();
+		bool quit;	
 
 		typedef struct _SCOREDATA
-			{
-				std::string scorename;
-				int score;
-			}scoredata;
+		{
+			std::string scorename;
+			int score;
+		}scoredata;
 
-		// Array data for top scores
-		scoredata topscores[10];
+		scoredata topScore;
 
+		// Vector for top scores
+		std::vector<scoredata> topScores;
+		
+		void loadTopScoresFromFile();
 
+		// Sorting predicate function used in sort, note: function must be static
+		static bool scorecmp( const scoredata& left, const scoredata& right );
 };
 
 #endif // INC_CHIGHSCORESCREEN_H 
