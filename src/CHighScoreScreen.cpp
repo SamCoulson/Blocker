@@ -13,14 +13,17 @@ CHighScoreScreen::CHighScoreScreen( CSDLGraphics& graphics ) : IScreen( graphics
 
 bool CHighScoreScreen::init(){
 
+	// Frame for score board
 	topscoreframe = graphics->loadImageFromFile("./images/TopScoreScreenFrame.bmp", 255, 0, 255 );	
 
+	// Load in the existing scores from file
+	// Needs error checking
 	loadTopScoresFromFile();
 
 	return true;
 }
 
-// Handle input of name taken from Lazt Foo's tutorials
+// Handle input of name taken from Lazy Foo's tutorials
 void CHighScoreScreen::processEvents( SDL_Event* event ){
 	// Enable UNICODE for all characters
 	SDL_EnableUNICODE( SDL_ENABLE );
@@ -84,7 +87,8 @@ void CHighScoreScreen::update(){
 }
 
 void CHighScoreScreen::render(){
-
+	
+	// String stream for holding interger score as string
 	std::ostringstream scoreAsString;
 	
 	// Clear screen
@@ -92,19 +96,30 @@ void CHighScoreScreen::render(){
 
 	// Draw frame and high score title
 	graphics->draw( 0, 0, topscoreframe, SDL_GetVideoSurface(), NULL);
-	
+
+	// Iterator for scores read in from file	
 	std::vector< scoredata >::iterator it;
 
-	// Y location placement for score
+	// Inital Y location placement for score
 	int rowSpacing = 90;
 	int i = 1;
-	// Loop through the 
-	for(it = topScores.begin(); it < topScores.end(); it++)
-	{
+
+	// Loop through the scores vector and output each name and score on a new line
+	for(it = topScores.begin(); it < topScores.end(); it++){
+
+		// Concatentate numbers and charatcers to form the current line 
 		scoreAsString << i << ". " << (*it).scorename << "..............." << (*it).score;
+
+		// Draw the line
 		graphics->drawText( scoreAsString.str(), 100, rowSpacing, "tunga.ttf", 255, 0, 0 );
+
+		// Move down enough for next line
 		rowSpacing += 35;
+
+		// Clear the string buffer for next line
 		scoreAsString.str("");
+
+		// Increment place in score list number
 		i++;
 	}
 
@@ -113,22 +128,18 @@ void CHighScoreScreen::render(){
 }
 
 void CHighScoreScreen::loadTopScoresFromFile(){
-
-	int scoreIndex, currentScore = 0;
-	int sortIndex = 0;
-
-	// top score file object Open file for input and output access
+	
+	// Open top score text file for input and output access
 	std::fstream topscorefile("TopScore.txt");
 
 	// Is file valid
-	if(!topscorefile)
-	{
+	if(!topscorefile){
 		std::cout << "Could not open top score file" << std::endl;
+		return;
 	}
 	
-	// Read in 10 scores scores from file
-	for(scoreIndex = 0; scoreIndex < 10; scoreIndex++)
-	{
+	// Read in 10 scores from file
+	for(int scoreIndex = 0; scoreIndex < 10; scoreIndex++){
 		// Read in name and score in to score data structure
 		topscorefile >> topScore.scorename >> topScore.score;
 		topScores.push_back( topScore );
@@ -136,7 +147,6 @@ void CHighScoreScreen::loadTopScoresFromFile(){
 
 	// Sort in descending order 
 	std::sort(topScores.begin(), topScores.end(), scorecmp );
-
 }
 
 bool CHighScoreScreen::scorecmp( const scoredata& left, const scoredata& right ){
