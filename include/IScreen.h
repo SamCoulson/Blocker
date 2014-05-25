@@ -2,10 +2,11 @@
 #define H_CSCREENBASE_INC
 
 #include "CSDLGraphics.h"
+#include "CGlobalGameData.h"
 
 class IScreen{
 	public:
-		IScreen( CSDLGraphics& ){};
+		IScreen( CSDLGraphics&, CGlobalGameData& ){};
 		virtual ~IScreen(){};
 
 		// Initilaise the sprites and values for the screen

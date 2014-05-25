@@ -2,9 +2,10 @@
 
 using namespace std;
 
-CGameArea::CGameArea( CSDLGraphics& graphics ) : IScreen( graphics ){
+CGameArea::CGameArea( CSDLGraphics& graphics, CGlobalGameData& gameData ) : IScreen( graphics, gameData ){
 
-	this->graphics = &graphics;	
+	this->graphics = &graphics;
+	this->gameData = &gameData;	
 }
 
 CGameArea::~CGameArea(){
@@ -48,7 +49,7 @@ bool CGameArea::init(){
 
 	paused = false;
 
-	gameScore = 0;
+	gameScore = 4000;
 	gameSpeed = 300;  // Specified in ms
 	gameLevel = 0;
 	keyPressed = 0;
@@ -111,6 +112,7 @@ void CGameArea::update(){
 	
 	if( isGameOver() ){
 		paused = true;
+		gameData->setScore( gameScore );	
 		gameOver = true;
 		quit = true;
 	}else if( isPaused() ){
@@ -347,12 +349,12 @@ const char* CGameArea::GetScore()
 	sprintf( this->score,"%05d", gameScore );
 	return score;
 }
-
+/*
 int CGameArea::GetIntScore()
 {
 	return gameScore;
 }
-
+*/
 const char* CGameArea::GetLevel()
 {
 	sprintf( this->level,"%02d", gameLevel );

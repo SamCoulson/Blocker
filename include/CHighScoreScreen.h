@@ -8,7 +8,7 @@
 class CHighScoreScreen : public IScreen{
 
 	public:
-		CHighScoreScreen( CSDLGraphics& graphics );
+		CHighScoreScreen( CSDLGraphics& graphics, CGlobalGameData& gameData );
 		~CHighScoreScreen(){};
 
 		bool init();
@@ -23,10 +23,13 @@ class CHighScoreScreen : public IScreen{
 	private:
 		
 		CSDLGraphics* graphics;
+		CGlobalGameData* gameData;
 	
 		SDL_Surface *topscoreframe;
 
-		bool quit;	
+		bool quit;
+
+		bool inEditMode;	
 
 		typedef struct _SCOREDATA
 		{

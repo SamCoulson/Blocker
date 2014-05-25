@@ -23,7 +23,7 @@ using namespace std;
 
 class CGameArea : public IScreen{
 public:
-	CGameArea( CSDLGraphics& graphics );
+	CGameArea( CSDLGraphics& graphics, CGlobalGameData& gameData );
 	~CGameArea();
 
 	bool init();
@@ -43,6 +43,8 @@ public:
 private:
 
 	CSDLGraphics *graphics;
+	CGlobalGameData *gameData;
+
 	CGrid *gameGrid;
 	
 	SDL_Surface *gameframe;
@@ -65,7 +67,7 @@ private:
 
 	const char* GetScore();
 
-	int GetIntScore();	
+	// int GetIntScore();	
 
 	const char* GetLevel();
 	

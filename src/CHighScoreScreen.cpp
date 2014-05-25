@@ -3,22 +3,47 @@
 #include <fstream>
 #include <sstream>
 #include <algorithm>
+#include <string>
 
-CHighScoreScreen::CHighScoreScreen( CSDLGraphics& graphics ) : IScreen( graphics ){
+CHighScoreScreen::CHighScoreScreen( CSDLGraphics& graphics, CGlobalGameData& gameData ) : IScreen( graphics, gameData ){
 	
-	this->graphics = &graphics;		
+	this->graphics = &graphics;
+	this->gameData = &gameData;	
 	topscoreframe = NULL;
+	inEditMode = false;
 	quit = false;
 }
 
 bool CHighScoreScreen::init(){
 
 	// Frame for score board
-	topscoreframe = graphics->loadImageFromFile("./images/TopScoreScreenFrame.bmp", 255, 0, 255 );	
+	topscoreframe = graphics->loadImageFromFile("./images/TopScoreScreenFrame00.png", 255, 0, 255 );	
 
 	// Load in the existing scores from file
 	// Needs error checking
 	loadTopScoresFromFile();
+
+	int newScore = gameData->getScore(); 
+
+	// Determine if new high score has been reached
+	if( newScore >= topScores.back().score ){
+		std::cout << "New High Score" << std::endl;	
+		inEditMode = true;
+
+		// Iterator for scores read in from file	
+		std::vector< scoredata >::iterator it;
+
+		// Determine where in the rank order the new score fits start from top and work down
+		for(it = topScores.begin(); it < topScores.end(); it++){
+	
+			// If new score is greater than current score overwrite it and enter edit mode
+			if( newScore > (*it).score ){
+				(*it).score = newScore;
+				inEditMode = true;
+				break;
+			}		
+		}
+	}
 
 	return true;
 }
@@ -89,6 +114,7 @@ void CHighScoreScreen::update(){
 void CHighScoreScreen::render(){
 	
 	// String stream for holding interger score as string
+	std::ostringstream rankNumAsString;
 	std::ostringstream scoreAsString;
 	
 	// Clear screen
@@ -101,26 +127,35 @@ void CHighScoreScreen::render(){
 	std::vector< scoredata >::iterator it;
 
 	// Inital Y location placement for score
-	int rowSpacing = 90;
-	int i = 1;
+	int rowSpacing = 70;
+
+	// Rank in score list
+	int rankNum = 1;
+
+	int greenVal = 10;
 
 	// Loop through the scores vector and output each name and score on a new line
 	for(it = topScores.begin(); it < topScores.end(); it++){
 
-		// Concatentate numbers and charatcers to form the current line 
-		scoreAsString << i << ". " << (*it).scorename << "..............." << (*it).score;
+		// Concatentate numbers and charatcers to form the current line
+		rankNumAsString << rankNum << ". ";
+		scoreAsString << (*it).score;
 
 		// Draw the line
-		graphics->drawText( scoreAsString.str(), 100, rowSpacing, "tunga.ttf", 255, 0, 0 );
+		graphics->drawText( rankNumAsString.str(), 100, rowSpacing, "tunga.ttf", 255,  greenVal+=10, 0 ); 	
+		graphics->drawText( (*it).scorename, 130, rowSpacing, "tunga.ttf", 255,  greenVal, 0 );
+		graphics->drawText( "..........", 170, rowSpacing, "tunga.ttf", 255,  greenVal, 0 );
+		graphics->drawText( scoreAsString.str(), 245, rowSpacing, "tunga.ttf", 255,  greenVal, 0 );
 
 		// Move down enough for next line
 		rowSpacing += 35;
 
 		// Clear the string buffer for next line
 		scoreAsString.str("");
+		rankNumAsString.str("");
 
 		// Increment place in score list number
-		i++;
+		rankNum++;
 	}
 
 	// Show the screen
@@ -147,6 +182,9 @@ void CHighScoreScreen::loadTopScoresFromFile(){
 
 	// Sort in descending order 
 	std::sort(topScores.begin(), topScores.end(), scorecmp );
+
+	// Close the file
+	topscorefile.close();
 }
 
 bool CHighScoreScreen::scorecmp( const scoredata& left, const scoredata& right ){

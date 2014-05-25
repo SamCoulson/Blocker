@@ -29,10 +29,13 @@ int main( int argc, char* args[])
 			return 1;
 	}
 
+	// Create global game object to store game data
+	CGlobalGameData *gameData = new CGlobalGameData();
+
 	// Create all the screens	
 	IScreen *introScreen = new CIntroScreen( *graphics );
-	IScreen *gameScreen = new CGameArea( *graphics );
-	IScreen *highScoreScreen = new CHighScoreScreen( *graphics );
+	IScreen *gameScreen = new CGameArea( *graphics, *gameData );
+	IScreen *highScoreScreen = new CHighScoreScreen( *graphics, *gameData );
 
 	// Hold references to all the screens
 	std::vector< IScreen* > screens;

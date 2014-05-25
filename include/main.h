@@ -15,5 +15,6 @@
 #include "CGameScreen.h"
 #include "CHighScoreScreen.h"
 #include "IScreen.h"
+#include "CGlobalGameData.h"
 
 #endif // INC_MAIN_H
