@@ -49,7 +49,7 @@ bool CGameArea::init(){
 
 	paused = false;
 
-	gameScore = 4000;
+	gameScore = 0;
 	gameSpeed = 300;  // Specified in ms
 	gameLevel = 0;
 	keyPressed = 0;

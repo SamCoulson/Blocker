@@ -4,6 +4,7 @@
 #include "../include/CSDLGraphics.h"
 #include "../include/IScreen.h"
 #include <vector>
+#include <sstream>
 
 class CHighScoreScreen : public IScreen{
 
@@ -29,12 +30,17 @@ class CHighScoreScreen : public IScreen{
 
 		bool quit;
 
-		bool inEditMode;	
+		bool inEditMode;
+
+		bool nameComplete;
+
+		std::stringstream newName;	
 
 		typedef struct _SCOREDATA
 		{
 			std::string scorename;
 			int score;
+			bool isNew;
 		}scoredata;
 
 		scoredata topScore;
@@ -43,6 +49,7 @@ class CHighScoreScreen : public IScreen{
 		std::vector<scoredata> topScores;
 		
 		void loadTopScoresFromFile();
+		void saveTopScoresToFile();
 
 		// Sorting predicate function used in sort, note: function must be static
 		static bool scorecmp( const scoredata& left, const scoredata& right );

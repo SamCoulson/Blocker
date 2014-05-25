@@ -11,6 +11,7 @@ CHighScoreScreen::CHighScoreScreen( CSDLGraphics& graphics, CGlobalGameData& gam
 	this->gameData = &gameData;	
 	topscoreframe = NULL;
 	inEditMode = false;
+	nameComplete = false;
 	quit = false;
 }
 
@@ -39,6 +40,7 @@ bool CHighScoreScreen::init(){
 			// If new score is greater than current score overwrite it and enter edit mode
 			if( newScore > (*it).score ){
 				(*it).score = newScore;
+				(*it).isNew = true;
 				inEditMode = true;
 				break;
 			}		
@@ -65,50 +67,61 @@ void CHighScoreScreen::processEvents( SDL_Event* event ){
 				quit = true;
 			break;
 			case SDLK_RETURN:
-
+				// Finshed entering name
+				inEditMode = false;
+				saveTopScoresToFile(); // Should be in update function
 			break;
 			default:
 				break;
 		}
 		event->type = SDL_KEYUP;
-		/*
-		if(userName.length() < 3)
-		{
+			
+		if( newName.str().size() < 3 && inEditMode ){
 			// if the key is a space
 			if(event->key.keysym.unicode == (Uint16)' ')
 			{
 				// Append the character
-				userName += (char)event->key.keysym.unicode;
+				newName << (char)event->key.keysym.unicode;
+				std::cout << "Letter key pressed" << (char)event->key.keysym.unicode << std::endl;
 			}
 			// If the key is a number
 			else if( ( event->key.keysym.unicode >= (Uint16)'0') && ( event->key.keysym.unicode <= (Uint16)'9') )
 			{
 				// Append the character
-				userName += (char)event->key.keysym.unicode;
+				newName << (char)event->key.keysym.unicode;
+				std::cout << "Letter key pressed" << (char)event->key.keysym.unicode << std::endl;
+
 			}
 			else if( ( event->key.keysym.unicode >= (Uint16)'A') && ( event->key.keysym.unicode <= (Uint16)'Z') )
 			{
 				// Append the character
-				userName += (char)event->key.keysym.unicode;
+				newName << (char)event->key.keysym.unicode;
+				std::cout << "Letter key pressed" << (char)event->key.keysym.unicode << std::endl;
+
 			}
 			else if( ( event->key.keysym.unicode >= (Uint16)'a') && ( event->key.keysym.unicode <= (Uint16)'z') )
 			{
 				// Append the character
-				userName += (char)event->key.keysym.unicode;
-			}
+				newName << (char)event->key.keysym.unicode;
+				std::cout << "Letter key pressed" << (char)event->key.keysym.unicode << std::endl;
 
+			}
 		}
+		
 		// If back space was pressed and the string isnt empty
-		if( (event->key.keysym.unicode == SDLK_BACKSPACE) && ( userName.length() != 0 ))
+		if( (event->key.keysym.unicode == SDLK_BACKSPACE) /*&& ( newName.size() != 0 )*/)
 		{
-			userName.erase( userName.length() -1);
+			std::string name = newName.str();
+			name = name.erase( name.length()-1 ); 
+			newName.str( name );
 		}
-		*/
+	
 	}
 }
 
 void CHighScoreScreen::update(){
-
+	
+		
 }
 
 void CHighScoreScreen::render(){
@@ -142,8 +155,13 @@ void CHighScoreScreen::render(){
 		scoreAsString << (*it).score;
 
 		// Draw the line
-		graphics->drawText( rankNumAsString.str(), 100, rowSpacing, "tunga.ttf", 255,  greenVal+=10, 0 ); 	
-		graphics->drawText( (*it).scorename, 130, rowSpacing, "tunga.ttf", 255,  greenVal, 0 );
+		graphics->drawText( rankNumAsString.str(), 100, rowSpacing, "tunga.ttf", 255,  greenVal+=10, 0 );
+		if( (*it).isNew == true ){
+			// If less than 3 chars append a blinking underscore	
+			graphics->drawText( newName.str(), 130, rowSpacing, "tunga.ttf", 255,  greenVal, 0 );
+		}else{
+			graphics->drawText( (*it).scorename, 130, rowSpacing, "tunga.ttf", 255,  greenVal, 0 );
+		}
 		graphics->drawText( "..........", 170, rowSpacing, "tunga.ttf", 255,  greenVal, 0 );
 		graphics->drawText( scoreAsString.str(), 245, rowSpacing, "tunga.ttf", 255,  greenVal, 0 );
 
@@ -182,6 +200,40 @@ void CHighScoreScreen::loadTopScoresFromFile(){
 
 	// Sort in descending order 
 	std::sort(topScores.begin(), topScores.end(), scorecmp );
+
+	// Close the file
+	topscorefile.close();
+}
+
+void CHighScoreScreen::saveTopScoresToFile(){
+	
+	// Open top score text file for input and output access
+	std::fstream topscorefile("TopScore.txt");
+
+	// Is file valid
+	if(!topscorefile){
+		std::cout << "Could not open top score file" << std::endl;
+		return;
+	}
+
+	// Iterator for scores read in from file	
+	std::vector< scoredata >::iterator it;
+	
+	// Read in 10 scores from file
+	for(it = topScores.begin(); it < topScores.end(); it++){
+
+		// Find the changed name and apply it
+		if( (*it).isNew == true ){
+			(*it).scorename = newName.str();
+		}
+
+		// Read in name and score in to score data structure
+		topscorefile << (*it).scorename << std::endl; 
+	       	topscorefile << (*it).score << std::endl;	
+	}
+
+	// Sort in descending order 
+	//std::sort(topScores.begin(), topScores.end(), scorecmp );
 
 	// Close the file
 	topscorefile.close();

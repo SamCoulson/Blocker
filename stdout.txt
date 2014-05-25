@@ -10,9 +10,55 @@ Trying to load ./images/TileSet.bmp
 Trying to load ./images/GameoverFrame00.bmp
 Trying to load ./images/TopScoreScreenFrame00.png
 New High Score
-7800
-7000
-5000
-4649
-4600
-3000
+Could not create render surface for m_pFont
+Could not create render surface for m_pFont
+Could not create render surface for m_pFont
+Could not create render surface for m_pFont
+Could not create render surface for m_pFont
+Could not create render surface for m_pFont
+Could not create render surface for m_pFont
+Could not create render surface for m_pFont
+Could not create render surface for m_pFont
+Could not create render surface for m_pFont
+Could not create render surface for m_pFont
+Could not create render surface for m_pFont
+Could not create render surface for m_pFont
+Could not create render surface for m_pFont
+Could not create render surface for m_pFont
+Could not create render surface for m_pFont
+Could not create render surface for m_pFont
+Could not create render surface for m_pFont
+Could not create render surface for m_pFont
+Could not create render surface for m_pFont
+Could not create render surface for m_pFont
+Could not create render surface for m_pFont
+Could not create render surface for m_pFont
+Could not create render surface for m_pFont
+Could not create render surface for m_pFont
+Could not create render surface for m_pFont
+Could not create render surface for m_pFont
+Could not create render surface for m_pFont
+Could not create render surface for m_pFont
+Could not create render surface for m_pFont
+Could not create render surface for m_pFont
+Could not create render surface for m_pFont
+Could not create render surface for m_pFont
+Could not create render surface for m_pFont
+Could not create render surface for m_pFont
+Could not create render surface for m_pFont
+Could not create render surface for m_pFont
+Could not create render surface for m_pFont
+Could not create render surface for m_pFont
+Could not create render surface for m_pFont
+Could not create render surface for m_pFont
+Could not create render surface for m_pFont
+Could not create render surface for m_pFont
+Could not create render surface for m_pFont
+Could not create render surface for m_pFont
+Could not create render surface for m_pFont
+Could not create render surface for m_pFont
+Could not create render surface for m_pFont
+Could not create render surface for m_pFont
+Letter key presseds
+Letter key presseda
+Letter key pressedm
