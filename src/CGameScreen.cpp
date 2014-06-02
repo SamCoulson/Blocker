@@ -28,9 +28,14 @@ bool CGameArea::init(){
  	
 	// Create grid just for the game area 
 	gameGrid = new CGrid( GAMEAREAWIDTH, GAMEAREAHEIGHT, GAMEAREA_TILE_SIZE, GAMEAREA_TILE_SIZE, 0, 0 ); 
-	if( gameGrid == NULL )
-	{
+	if( gameGrid == NULL ){
 		std::cout << "Cannot create GameGrid Object" << std::endl;
+		return false;
+	}
+
+	nextPieceGrid = new CGrid( NEXTPIECEWIDTH, NEXTPIECEHEIGHT, GAMEAREA_TILE_SIZE, GAMEAREA_TILE_SIZE, 130, 260 ); 
+	if( nextPieceGrid == NULL ){
+		std::cout << "Cannot create nextPieceGrid Object" << std::endl;
 		return false;
 	}	
 	
@@ -44,6 +49,8 @@ bool CGameArea::init(){
 	
 	// Spawn first piece
 	currentPiece = new CGamePiece();	
+
+	nextPiece = new CGamePiece();
 
 	quit = false;
 
@@ -180,7 +187,7 @@ void CGameArea::update(){
 			blockType = currentPiece->getColor() + 100;	
 		}else{
 			blockType = currentPiece->getColor();	
-		}
+		}	
 
 		unsigned int current_block_piece = 0;		
 
@@ -203,7 +210,7 @@ void CGameArea::update(){
 		// Spawn new block
 		if( staticMode == true ){
 			delete currentPiece;
-			currentPiece = new CGamePiece();	
+			currentPiece = new CGamePiece();   	
 		}
 		
 		// Increase the speed if next level has been reached
@@ -211,7 +218,26 @@ void CGameArea::update(){
 	}
 	// Put pre-piece
 	// CPlayerPiece.PutPiece(CPlayerPiece.pPrePiece, 17, 23, ISBLOCKPIECE, g_pScreenGrid);
+	
+	unsigned int current_tile = 0;
+	unsigned int block_type = 0;
 
+	block_type = nextPiece->getColor() + 100;
+
+	// Iterate through the current block data and set those block for drawing into the grid that are visible
+	for( int row_index = 0; row_index < nextPiece->getHeight(); row_index++)
+	{
+		for( int column_index = 0; column_index < nextPiece->getWidth(); column_index++)
+		{
+			if( nextPiece->getPieceData( current_tile ) == '1')
+			{
+				nextPieceGrid->setTileFlag( nextPiece->getPosX() + column_index, 
+						nextPiece->getPosY() + row_index, block_type );
+			}
+		// Next block piece in block array
+		current_tile++;
+		}
+	}
 	// Reset pre-piece area *doesnt work properly*
 	// g_pScreenGrid->SetSDLGridBitmapRepeated(g_pScreenGrid->GetSDLGridXY(15, 11).x, g_pScreenGrid->GetSDLGridXY(15, 11).y, 
 	// g_pScreenGrid->GetSDLGridXY(20, 17).x, g_pScreenGrid->GetSDLGridXY(20, 17).y, NULL, NULL);
@@ -273,6 +299,41 @@ void CGameArea::render(){
 			case GREEN:
 			case STATIC_GREEN:
 				graphics->draw( gameGrid->getXY(i, j)->x, gameGrid->getXY( i, j)->y, 
+						gametile, SDL_GetVideoSurface(), &greenTile );
+				break;
+			case PURPLE:
+			case STATIC_PURPLE:
+				graphics->draw( gameGrid->getXY(i, j)->x, gameGrid->getXY( i, j)->y, 
+						gametile, SDL_GetVideoSurface(), &purpleTile );
+				break;
+			case YELLOW:
+			case STATIC_YELLOW:
+				graphics->draw( gameGrid->getXY(i, j)->x, gameGrid->getXY( i, j)->y, 
+						gametile, SDL_GetVideoSurface(), &yellowTile );
+				break;
+			default:
+				break;
+			}
+		}
+	}
+
+	// Draw game area with player piece
+	for( int i = 0; i < NEXTPIECEWIDTH; i++ ){
+		for( int j = 0; j < NEXTPIECEHEIGHT; j++ ){
+			switch( nextPieceGrid->getTileFlag( i, j) ){
+			case RED:
+			case STATIC_RED:					
+				graphics->draw( nextPieceGrid->getXY(i, j)->x, nextPieceGrid->getXY( i, j)->y, 
+						gametile, SDL_GetVideoSurface(), &redTile );	
+				break;
+			case BLUE:
+			case STATIC_BLUE:
+				graphics->draw( nextPieceGrid->getXY(i, j)->x, nextPieceGrid->getXY( i, j)->y, 
+						gametile, SDL_GetVideoSurface(), &blueTile );
+				break;
+			case GREEN:
+			case STATIC_GREEN:
+				graphics->draw( nextPieceGrid->getXY(i, j)->x, nextPieceGrid->getXY( i, j)->y, 
 						gametile, SDL_GetVideoSurface(), &greenTile );
 				break;
 			case PURPLE:

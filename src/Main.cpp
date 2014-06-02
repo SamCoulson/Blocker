@@ -33,7 +33,7 @@ int main( int argc, char* args[])
 	CGlobalGameData *gameData = new CGlobalGameData();
 
 	// Create all the screens	
-	IScreen *introScreen = new CIntroScreen( *graphics );
+	IScreen *introScreen = new CIntroScreen( *graphics, *gameData );
 	IScreen *gameScreen = new CGameArea( *graphics, *gameData );
 	IScreen *highScoreScreen = new CHighScoreScreen( *graphics, *gameData );
 
@@ -58,7 +58,7 @@ int main( int argc, char* args[])
 		// The the screen has not been initialised then load it up.
 		if( isInitialised == false ){
 			if( currentScreen->init() == false ){
-				cout << "Failed to initalise screen!" << endl;
+				cout << "Failed to initialise screen!" << endl;
 				gameQuit = true;
 			}	
 			isInitialised = true;	

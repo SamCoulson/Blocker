@@ -6,7 +6,7 @@
 
 class CIntroScreen : public IScreen{
 	public:
-		CIntroScreen( CSDLGraphics& );
+		CIntroScreen( CSDLGraphics&, CGlobalGameData& );
 		~CIntroScreen();
 
 		bool init();

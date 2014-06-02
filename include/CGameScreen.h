@@ -13,6 +13,9 @@
 #define GAMEAREAHEIGHT 22 
 #define GAMEAREA_TILE_SIZE 20
 
+#define NEXTPIECEWIDTH 4
+#define NEXTPIECEHEIGHT 4 
+
 #define RIGHT 10
 #define LEFT 11
 #define DOWN 12
@@ -46,7 +49,8 @@ private:
 	CGlobalGameData *gameData;
 
 	CGrid *gameGrid;
-	
+	CGrid *nextPieceGrid;
+
 	SDL_Surface *gameframe;
 	SDL_Surface *gametile;
 	SDL_Surface *gameoverframe;
@@ -56,6 +60,7 @@ private:
 	bool paused;
 	
 	CGamePiece* currentPiece;
+	CGamePiece* nextPiece; 
 
 	unsigned int keyPressed;
 
