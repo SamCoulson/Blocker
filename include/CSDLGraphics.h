@@ -56,7 +56,7 @@ public:
 	void draw(int x, int y , SDL_Surface* srcimage, SDL_Surface * destSurface, SDL_Rect* cliprect);	
 
 	// Draw text with given font
-	void drawText( std::string text, int pos_x, int pos_y, std::string fontName, 
+	void drawText( std::string text, int pos_x, int pos_y, std::string fontName, int fontSize, 
 			unsigned int r, unsigned int g, unsigned int b );
 
 	//void drawLine(int start_x, int start_y, int end_x, int end_y, UINT r, UINT g, UINT b )

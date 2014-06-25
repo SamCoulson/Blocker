@@ -30,7 +30,7 @@ class Grid;
 class CGamePiece
 {
 public:
-	CGamePiece();
+	CGamePiece( unsigned int startPosX, unsigned int startPosY );
 	~CGamePiece();
 
 	void SpawnNewPiece(void);

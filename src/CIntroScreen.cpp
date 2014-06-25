@@ -61,7 +61,7 @@ void CIntroScreen::render(){
 	// Draw game frame	
 	graphics->draw( 0, 0, introscreenframe, SDL_GetVideoSurface(), NULL);
 	
-	graphics->drawText( "Press space to start", 100, 300, "tunga.ttf", 255, introTextColour, introTextColour );
+	graphics->drawText( "Press space to start", 100, 300, "tunga.ttf", 30, 255, introTextColour, introTextColour );
 	
 	if(introTextColour == 255)
 	{

@@ -155,15 +155,15 @@ void CHighScoreScreen::render(){
 		scoreAsString << (*it).score;
 
 		// Draw the line
-		graphics->drawText( rankNumAsString.str(), 100, rowSpacing, "tunga.ttf", 255,  greenVal+=10, 0 );
+		graphics->drawText( rankNumAsString.str(), 100, rowSpacing, "tunga.ttf", 26, 255, greenVal+=10, 0 );
 		if( (*it).isNew == true ){
 			// If less than 3 chars append a blinking underscore	
-			graphics->drawText( newName.str(), 130, rowSpacing, "tunga.ttf", 255,  greenVal, 0 );
+			graphics->drawText( newName.str(), 130, rowSpacing, "tunga.ttf", 26, 255, greenVal, 0 );
 		}else{
-			graphics->drawText( (*it).scorename, 130, rowSpacing, "tunga.ttf", 255,  greenVal, 0 );
+			graphics->drawText( (*it).scorename, 130, rowSpacing, "tunga.ttf", 26, 255, greenVal, 0 );
 		}
-		graphics->drawText( "..........", 170, rowSpacing, "tunga.ttf", 255,  greenVal, 0 );
-		graphics->drawText( scoreAsString.str(), 245, rowSpacing, "tunga.ttf", 255,  greenVal, 0 );
+		graphics->drawText( "..........", 170, rowSpacing, "tunga.ttf", 26, 255, greenVal, 0 );
+		graphics->drawText( scoreAsString.str(), 245, rowSpacing, "tunga.ttf", 26, 255,  greenVal, 0 );
 
 		// Move down enough for next line
 		rowSpacing += 35;

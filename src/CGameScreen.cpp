@@ -33,7 +33,7 @@ bool CGameArea::init(){
 		return false;
 	}
 
-	nextPieceGrid = new CGrid( NEXTPIECEWIDTH, NEXTPIECEHEIGHT, GAMEAREA_TILE_SIZE, GAMEAREA_TILE_SIZE, 130, 260 ); 
+	nextPieceGrid = new CGrid( NEXTPIECEWIDTH, NEXTPIECEHEIGHT, GAMEAREA_TILE_SIZE, GAMEAREA_TILE_SIZE, 260, 310 ); 
 	if( nextPieceGrid == NULL ){
 		std::cout << "Cannot create nextPieceGrid Object" << std::endl;
 		return false;
@@ -48,9 +48,9 @@ bool CGameArea::init(){
 	gameoverframe = graphics->loadImageFromFile( "./images/GameoverFrame00.bmp", 255, 0, 255 );	
 	
 	// Spawn first piece
-	currentPiece = new CGamePiece();	
+	currentPiece = new CGamePiece( 4, 0 );	
 
-	nextPiece = new CGamePiece();
+	nextPiece = new CGamePiece( 2, 1 );
 
 	quit = false;
 
@@ -210,7 +210,8 @@ void CGameArea::update(){
 		// Spawn new block
 		if( staticMode == true ){
 			delete currentPiece;
-			currentPiece = new CGamePiece();   	
+			currentPiece = nextPiece;
+			nextPiece = new CGamePiece( 2, 1);   	
 		}
 		
 		// Increase the speed if next level has been reached
@@ -361,13 +362,13 @@ void CGameArea::render(){
 	}
 
 	if( paused == true ){
-		graphics->drawText( "Paused", 80, 140, "tunga.ttf", 255, 0, 0  );
+		graphics->drawText( "Paused", 80, 140, "tunga.ttf", 40, 255, 0, 0  );
 	}
 
 	//Draw score and level number 
-	graphics->drawText( GetScore(), 270, 40, "tunga.ttf", 255, 0, 0  );
+	graphics->drawText( GetScore(), 260, 10, "tunga.ttf", 40, 255, 0, 0  );
 	
-	graphics->drawText( GetLevel(), 270, 170, "tunga.ttf", 255, 0, 0  );	
+	graphics->drawText( GetLevel(), 260, 80, "tunga.ttf", 40, 255, 0, 0  );	
 	
 	// Show the screen
 	// Or can use update rects
@@ -453,16 +454,15 @@ void CGameArea::ClearGrid()
 
 	// The below is a semi hack to get the next piece box clear.
 
-	for( column_index = 20; column_index < 30; column_index ++)
+	for( column_index = 0; column_index < 5; column_index ++)
 	{
-		for( row_index = 10; row_index < 23; row_index++ )
+		for( row_index = 0; row_index < 5; row_index++ )
 		{
-/*			if(g_pScreenGrid->GetGridStatus(row_index, column_index) == ISBLOCKPIECE)
+			if( nextPieceGrid->getTileFlag( row_index, column_index) > 100 )
 			{
-				g_pScreenGrid->SetGridStatus(row_index, column_index, CLEAR);
-				g_pScreenGrid->SetGridSDLImage(row_index, column_index, NULL, NULL);
+				nextPieceGrid->setTileFlag( row_index, column_index, CLEAR );
 			}
-*/		}
+		}
 	}
 	
 }

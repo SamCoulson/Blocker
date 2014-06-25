@@ -397,7 +397,7 @@ void CSDLGraphics::draw(int x, int y, SDL_Surface* srcimage, SDL_Surface* destSu
 
 }
 
-void CSDLGraphics::drawText( std::string text, int pos_x, int pos_y, std::string fontName, 
+void CSDLGraphics::drawText( std::string text, int pos_x, int pos_y, std::string fontName, int fontSize, 
 			unsigned int r, unsigned int g, unsigned int b  )
 {
 	// Pointer to font object
@@ -407,7 +407,7 @@ void CSDLGraphics::drawText( std::string text, int pos_x, int pos_y, std::string
 	SDL_Surface *text_surface;
 
 	//Set up m_pFont for text output *make settable* also ensure TTF_Init has been run
-	m_pFont = TTF_OpenFont( fontName.c_str(), 26 );
+	m_pFont = TTF_OpenFont( fontName.c_str(), fontSize );
 
 	// Was m_pFont not loaded OK
 	if(!m_pFont)

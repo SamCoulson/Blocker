@@ -1,12 +1,12 @@
 #include "../include/CGamePiece.h"
 #include <stdlib.h>
 
-CGamePiece::CGamePiece()
+CGamePiece::CGamePiece( unsigned int startPosX, unsigned int startPosY )
 {
 	InitGamePieces();
 	
-	currentPosX = 4;
-	currentPosY = 0;
+	currentPosX = startPosX;
+	currentPosY = startPosY;
 
 	m_direction = 0;
 
