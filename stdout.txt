@@ -9,3 +9,34 @@ Trying to load ./images/GameFrameRounded.bmp
 Trying to load ./images/TileSet.bmp
 Trying to load ./images/GameoverFrame00.bmp
 Trying to load ./images/TopScoreScreenFrame00.png
+New High Score
+Could not create render surface for m_pFont
+Could not create render surface for m_pFont
+Could not create render surface for m_pFont
+Could not create render surface for m_pFont
+Could not create render surface for m_pFont
+Could not create render surface for m_pFont
+Could not create render surface for m_pFont
+Could not create render surface for m_pFont
+Could not create render surface for m_pFont
+Could not create render surface for m_pFont
+Could not create render surface for m_pFont
+Could not create render surface for m_pFont
+Could not create render surface for m_pFont
+Could not create render surface for m_pFont
+Could not create render surface for m_pFont
+Could not create render surface for m_pFont
+Could not create render surface for m_pFont
+Could not create render surface for m_pFont
+Could not create render surface for m_pFont
+Could not create render surface for m_pFont
+Could not create render surface for m_pFont
+Could not create render surface for m_pFont
+Could not create render surface for m_pFont
+Could not create render surface for m_pFont
+Could not create render surface for m_pFont
+Could not create render surface for m_pFont
+Could not create render surface for m_pFont
+Letter key pressedS
+Letter key presseda
+Letter key pressedm

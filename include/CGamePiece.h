@@ -18,6 +18,7 @@
 #define PURPLE 50
 #define YELLOW 60
 
+#define STATIC_TILE   100
 #define STATIC_RED    120
 #define STATIC_BLUE   130
 #define STATIC_GREEN  140
@@ -33,14 +34,15 @@ public:
 	CGamePiece( unsigned int startPosX, unsigned int startPosY );
 	~CGamePiece();
 
-	void SpawnNewPiece(void);
 	void RotatePiece();
 	
 	unsigned int getPosX(){ return currentPosX; }
 	unsigned int getPosY(){ return currentPosY; }
-	
+	unsigned int getRotation(){ return m_current_rotation; }
+
 	void setPosX( unsigned int pos ){ currentPosX = pos; }
 	void setPosY( unsigned int pos ){ currentPosY = pos; }
+	void setRotation( unsigned int rotation );
 
 	unsigned int getWidth(){ return pCurrentPiece->piece_width; }
 	unsigned int getHeight(){ return pCurrentPiece->piece_height; }
@@ -50,7 +52,7 @@ public:
 	
 private:
 	// Current X and Y in grid coords 
-	unsigned int m_current_piece, m_prepiece, m_current_rotation, m_direction;
+	unsigned int m_current_piece, m_current_rotation, m_direction;
 
 	// Track current piece position
 	unsigned int currentPosX, currentPosY;  
@@ -70,8 +72,8 @@ private:
 	// Set up each piece 
 	void InitGamePieces( void );
 
-	m_Piece_s *pCurrentPiece;
-	m_Piece_s *pPrePiece;
+	// Pointer to current piece
+	m_Piece_s *pCurrentPiece;	
 	
 };
 

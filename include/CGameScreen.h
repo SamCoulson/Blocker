@@ -41,54 +41,70 @@ public:
 
 	void cleanUp(){};	
 
-	void ClearGrid();		
+	void clearGrid( CGrid* );		
 	
 private:
 
 	CSDLGraphics *graphics;
 	CGlobalGameData *gameData;
 
+	// Rectangles areas for each block
+	SDL_Rect redTile, blueTile, greenTile, purpleTile, yellowTile;
+
+	// Logical grids for main game area and next piece
 	CGrid *gameGrid;
 	CGrid *nextPieceGrid;
 
+	// Surfaces for visual elements
 	SDL_Surface *gameframe;
 	SDL_Surface *gametile;
 	SDL_Surface *gameoverframe;
 	SDL_Surface *pausedframe;
-	
+
+	// Game states	
 	bool quit;
 	bool paused;
-	
+	bool gameOver;
+	unsigned int gameSpeed;
+
+	// Popinters to current and next game pieces	
 	CGamePiece* currentPiece;
 	CGamePiece* nextPiece; 
 
-	unsigned int keyPressed;
-
-	unsigned int gameSpeed;
+	// Keyboard flags
+	unsigned int keyPressed;	
 
 	// Char buffer for score output
 	char score[10];
 	char level[2];
+	char lines[6];
 
+	// Utility function to output int numbers to strings for rendering 
 	const char* GetScore();
-
-	// int GetIntScore();	
-
 	const char* GetLevel();
-	
-	bool gameOver;
+	const char* GetLines();
 
-	// Score storage
+	// Score counter
 	int gameScore;
+
+	// Level counter
 	int gameLevel;
+
+	// Lines counter
+	unsigned int gameLines;
+        unsigned int levelLines;	
 
 	int elapsedTime;
 
+	// Methods used in game logic
 	bool collide();
 	void isFullLine();
 	void removeLine( int iFullRowIndex );
 	void checkAndSetLevel();
 	bool isGameOver();
+
+	void putPiece( CGamePiece*, CGrid* grid, bool staticMode );
+	void renderGrid( CGrid* );
 };
 
 #endif // INC_CGAMEAREA_H

@@ -5,7 +5,34 @@ using namespace std;
 CGameArea::CGameArea( CSDLGraphics& graphics, CGlobalGameData& gameData ) : IScreen( graphics, gameData ){
 
 	this->graphics = &graphics;
-	this->gameData = &gameData;	
+	this->gameData = &gameData;
+
+	// Define all block cooridates in image file	
+	redTile.x = 40;
+	redTile.y = 0;
+	redTile.w = 20;
+	redTile.h = 20;
+	
+	blueTile.x = 20;
+	blueTile.y = 0;
+	blueTile.w = 20;
+	blueTile.h = 20;
+	
+	greenTile.x = 60;
+	greenTile.y = 0;
+	greenTile.w = 20;
+	greenTile.h = 20;
+	
+	purpleTile.x = 80;
+	purpleTile.y = 0;
+	purpleTile.w = 20;
+	purpleTile.h = 20;
+	
+	yellowTile.x = 0;
+	yellowTile.y = 0;
+	yellowTile.w = 20;
+	yellowTile.h = 20;
+
 }
 
 CGameArea::~CGameArea(){
@@ -50,15 +77,20 @@ bool CGameArea::init(){
 	// Spawn first piece
 	currentPiece = new CGamePiece( 4, 0 );	
 
+	// Spawn next piece
 	nextPiece = new CGamePiece( 2, 1 );
 
+	// Init game states
 	quit = false;
-
 	paused = false;
 
+	// Init game metrics
 	gameScore = 0;
 	gameSpeed = 300;  // Specified in ms
 	gameLevel = 0;
+	gameLines = 0;
+	levelLines = 10;
+
 	keyPressed = 0;
 
 	gameOver = false;
@@ -130,11 +162,15 @@ void CGameArea::update(){
 		// Also clears the next piece box.
 		bool staticMode = false;
 
-		ClearGrid();
+		// Clear all the non-static blocks i.e. current game piece blocks from the grid ready for the next
+		// placment of blocks
+		clearGrid( gameGrid );
+		clearGrid( nextPieceGrid );
 
 		// Save current position and rotation
 		unsigned int posX = currentPiece->getPosX();
 		unsigned int posY = currentPiece->getPosY();
+		unsigned int rotation = currentPiece->getRotation();
 
 		// Detect full lines and later the game area as necessary before moving the current piece
 		isFullLine();
@@ -152,6 +188,18 @@ void CGameArea::update(){
 				break;
 			case ROTATE:
 				currentPiece->RotatePiece();
+
+				// Enable 'wall-kick' mode, this mean the piece will move to accomodate the space
+				// the piece needs if the player rotates the piece next to a wall
+				if( currentPiece->getPosX() + currentPiece->getWidth() > GAMEAREAWIDTH-1 ){
+					currentPiece->setPosX( (GAMEAREAWIDTH-1) - currentPiece->getWidth() );
+				}
+
+				// If block has rotated into static blcks then disallow the rotation
+				if( collide() ){
+					currentPiece->setRotation( rotation );
+				}
+
 				break;
 			case DOWN:
 				currentPiece->setPosY( currentPiece->getPosY()+1 );
@@ -181,178 +229,46 @@ void CGameArea::update(){
 			staticMode = true;
 		}
 
-		// Prepare the block to be set into the game area as static or not
-		unsigned int blockType = 0;
-		if( staticMode ){
-			blockType = currentPiece->getColor() + 100;	
-		}else{
-			blockType = currentPiece->getColor();	
-		}	
-
-		unsigned int current_block_piece = 0;		
-
-		// Iterate through the current block data and set those block for drawing into the grid that are visible
-		for( int row_index = 0; row_index < currentPiece->getHeight(); row_index++)
-		{
-			for( int column_index = 0; column_index < currentPiece->getWidth(); column_index++)
-			{
-				if( currentPiece->getPieceData( current_block_piece ) == '1')
-				{
-					gameGrid->setTileFlag( currentPiece->getPosX() + column_index, 
-							currentPiece->getPosY() + row_index, blockType );
-				}
-			// Next block piece in block array
-			current_block_piece++;
-			}
-		}	
+		// Put current piece into the current game area
+		putPiece( currentPiece, gameGrid, staticMode );
 
 		// If in static mode then block is being drawn into grid which must mean a new piece is needed.	
 		// Spawn new block
 		if( staticMode == true ){
+			// Remove current piece
 			delete currentPiece;
+
+			// Set the current piece to the next piece
 			currentPiece = nextPiece;
-			nextPiece = new CGamePiece( 2, 1);   	
+			currentPiece->setPosX(4);
+			currentPiece->setPosY(0);
+
+			// Spawn a new next piece
+			
+			// NOTE: Need to calculate correct positioning of piece in next piece box
+			// so that is appers more or less central in the box
+			nextPiece = new CGamePiece( 2, 1);		
 		}
 		
 		// Increase the speed if next level has been reached
 		checkAndSetLevel();
 	}
-	// Put pre-piece
-	// CPlayerPiece.PutPiece(CPlayerPiece.pPrePiece, 17, 23, ISBLOCKPIECE, g_pScreenGrid);
-	
-	unsigned int current_tile = 0;
-	unsigned int block_type = 0;
 
-	block_type = nextPiece->getColor() + 100;
-
-	// Iterate through the current block data and set those block for drawing into the grid that are visible
-	for( int row_index = 0; row_index < nextPiece->getHeight(); row_index++)
-	{
-		for( int column_index = 0; column_index < nextPiece->getWidth(); column_index++)
-		{
-			if( nextPiece->getPieceData( current_tile ) == '1')
-			{
-				nextPieceGrid->setTileFlag( nextPiece->getPosX() + column_index, 
-						nextPiece->getPosY() + row_index, block_type );
-			}
-		// Next block piece in block array
-		current_tile++;
-		}
-	}
-	// Reset pre-piece area *doesnt work properly*
-	// g_pScreenGrid->SetSDLGridBitmapRepeated(g_pScreenGrid->GetSDLGridXY(15, 11).x, g_pScreenGrid->GetSDLGridXY(15, 11).y, 
-	// g_pScreenGrid->GetSDLGridXY(20, 17).x, g_pScreenGrid->GetSDLGridXY(20, 17).y, NULL, NULL);
-		
+	// Put next game piece into the next piece window
+	putPiece( nextPiece, nextPieceGrid, false );
+			
 }
 
-void CGameArea::render(){
-
-	// NOTE: Could make this render according to states	
+void CGameArea::render(){	
 	
 	// Clear screen
 	graphics->clearScreen( 0, 0, 0 );
-		
-	// Draw all the blocks in the game area	
-	SDL_Rect redTile;
-	redTile.x = 40;
-	redTile.y = 0;
-	redTile.w = 20;
-	redTile.h = 20;
 	
-	SDL_Rect blueTile;
-	blueTile.x = 20;
-	blueTile.y = 0;
-	blueTile.w = 20;
-	blueTile.h = 20;
-	
-	SDL_Rect greenTile;
-	greenTile.x = 60;
-	greenTile.y = 0;
-	greenTile.w = 20;
-	greenTile.h = 20;
-	
-	SDL_Rect purpleTile;
-	purpleTile.x = 80;
-	purpleTile.y = 0;
-	purpleTile.w = 20;
-	purpleTile.h = 20;
-	
-	SDL_Rect yellowTile;
-	yellowTile.x = 0;
-	yellowTile.y = 0;
-	yellowTile.w = 20;
-	yellowTile.h = 20;
 
-	// Draw game area with player piece
-	for( int i = 0; i < GAMEAREAWIDTH; i++ ){
-		for( int j = 0; j < GAMEAREAHEIGHT; j++ ){
-			switch( gameGrid->getTileFlag( i, j) ){
-			case RED:
-			case STATIC_RED:					
-				graphics->draw( gameGrid->getXY(i, j)->x, gameGrid->getXY( i, j)->y, 
-						gametile, SDL_GetVideoSurface(), &redTile );	
-				break;
-			case BLUE:
-			case STATIC_BLUE:
-				graphics->draw( gameGrid->getXY(i, j)->x, gameGrid->getXY( i, j)->y, 
-						gametile, SDL_GetVideoSurface(), &blueTile );
-				break;
-			case GREEN:
-			case STATIC_GREEN:
-				graphics->draw( gameGrid->getXY(i, j)->x, gameGrid->getXY( i, j)->y, 
-						gametile, SDL_GetVideoSurface(), &greenTile );
-				break;
-			case PURPLE:
-			case STATIC_PURPLE:
-				graphics->draw( gameGrid->getXY(i, j)->x, gameGrid->getXY( i, j)->y, 
-						gametile, SDL_GetVideoSurface(), &purpleTile );
-				break;
-			case YELLOW:
-			case STATIC_YELLOW:
-				graphics->draw( gameGrid->getXY(i, j)->x, gameGrid->getXY( i, j)->y, 
-						gametile, SDL_GetVideoSurface(), &yellowTile );
-				break;
-			default:
-				break;
-			}
-		}
-	}
-
-	// Draw game area with player piece
-	for( int i = 0; i < NEXTPIECEWIDTH; i++ ){
-		for( int j = 0; j < NEXTPIECEHEIGHT; j++ ){
-			switch( nextPieceGrid->getTileFlag( i, j) ){
-			case RED:
-			case STATIC_RED:					
-				graphics->draw( nextPieceGrid->getXY(i, j)->x, nextPieceGrid->getXY( i, j)->y, 
-						gametile, SDL_GetVideoSurface(), &redTile );	
-				break;
-			case BLUE:
-			case STATIC_BLUE:
-				graphics->draw( nextPieceGrid->getXY(i, j)->x, nextPieceGrid->getXY( i, j)->y, 
-						gametile, SDL_GetVideoSurface(), &blueTile );
-				break;
-			case GREEN:
-			case STATIC_GREEN:
-				graphics->draw( nextPieceGrid->getXY(i, j)->x, nextPieceGrid->getXY( i, j)->y, 
-						gametile, SDL_GetVideoSurface(), &greenTile );
-				break;
-			case PURPLE:
-			case STATIC_PURPLE:
-				graphics->draw( gameGrid->getXY(i, j)->x, gameGrid->getXY( i, j)->y, 
-						gametile, SDL_GetVideoSurface(), &purpleTile );
-				break;
-			case YELLOW:
-			case STATIC_YELLOW:
-				graphics->draw( gameGrid->getXY(i, j)->x, gameGrid->getXY( i, j)->y, 
-						gametile, SDL_GetVideoSurface(), &yellowTile );
-				break;
-			default:
-				break;
-			}
-		}
-	}
-
+	// Draw game area with player piece and next piece
+	renderGrid( gameGrid );
+	renderGrid( nextPieceGrid );
+	
 	// Draw game frame	
 	graphics->draw( 0 ,0 , gameframe, SDL_GetVideoSurface(), NULL );	
 
@@ -361,6 +277,7 @@ void CGameArea::render(){
 		graphics->draw( 5, 100, gameoverframe, SDL_GetVideoSurface(), NULL);
 	}
 
+	// Draw the text 'Paused' if game is paused
 	if( paused == true ){
 		graphics->drawText( "Paused", 80, 140, "tunga.ttf", 40, 255, 0, 0  );
 	}
@@ -369,16 +286,35 @@ void CGameArea::render(){
 	graphics->drawText( GetScore(), 260, 10, "tunga.ttf", 40, 255, 0, 0  );
 	
 	graphics->drawText( GetLevel(), 260, 80, "tunga.ttf", 40, 255, 0, 0  );	
-	
+
+	graphics->drawText( GetLines(), 260, 150, "tunga.ttf", 40, 255, 0, 0  );	
+
 	// Show the screen
 	// Or can use update rects
 	graphics->update();
 	
 }
 
-
+// Check the score and set the level according to how many lines have been scored.
+// On progression to the next level speed up the game.
 void CGameArea::checkAndSetLevel()
 {
+
+	// If the number of lines scored so far exceed what has been set for this level i.e. 10 lines per level
+	// then speed up the game by a small fraction every ten lines scored
+	if( gameLines > levelLines ){
+		// Reduce sleep time in loop by ten ms, however anything below 50 would be too quick
+		if( gameSpeed > 50 ){
+			gameSpeed -= 10;
+		}else{
+			// Game needs to end as players has beaten the quickest level or
+			// could just fix it at ten for infitnate play
+		}
+		
+		levelLines += 10;
+		
+	}
+/*
 	if( gameScore >= 1000 )
 	{
 		gameSpeed = 250;
@@ -404,25 +340,29 @@ void CGameArea::checkAndSetLevel()
 		gameSpeed = 50;
 		gameLevel = 5;
 	}
+	*/
 }
 
+// Utiltiy function to convert game score to a string ready for render
 const char* CGameArea::GetScore()
 { 
 	sprintf( this->score,"%05d", gameScore );
 	return score;
 }
-/*
-int CGameArea::GetIntScore()
-{
-	return gameScore;
-}
-*/
+
+// Utiltiy function to convert game level to a string render
 const char* CGameArea::GetLevel()
 {
 	sprintf( this->level,"%02d", gameLevel );
 	return level;
 }
 
+const char* CGameArea::GetLines(){
+	sprintf( this->lines,"%04d", gameLines );
+	return lines;
+}
+
+// Test if the player has lost the game
 bool CGameArea::isGameOver()
 {
 	// Scan the top line	
@@ -436,35 +376,18 @@ bool CGameArea::isGameOver()
 	return false;
 }
 
-// Resets all logical and image values for grid blocks that are the player piece to clear.  Ready for next frame. 
-void CGameArea::ClearGrid()
-{
-	int row_index, column_index;
-
-	for( column_index = 0; column_index < GAMEAREAHEIGHT; column_index++ )
-	{
-		for( row_index = 0; row_index < GAMEAREAWIDTH; row_index++ )
-		{
-			if( gameGrid->getTileFlag( row_index, column_index) < 100 )
-			{
-				gameGrid->setTileFlag( row_index, column_index, CLEAR );
-			}
-		}
-	}
-
-	// The below is a semi hack to get the next piece box clear.
-
-	for( column_index = 0; column_index < 5; column_index ++)
-	{
-		for( row_index = 0; row_index < 5; row_index++ )
-		{
-			if( nextPieceGrid->getTileFlag( row_index, column_index) > 100 )
-			{
-				nextPieceGrid->setTileFlag( row_index, column_index, CLEAR );
-			}
-		}
-	}
+// Resets all logical values for grid blocks that are the player piece to clear.  Ready for next frame. 
+void CGameArea::clearGrid( CGrid* grid ){
 	
+	for( int columnIndex = 0; columnIndex < grid->getHeight(); columnIndex++ ){
+
+		for( int rowIndex = 0; rowIndex < grid->getWidth(); rowIndex++ ){
+
+			if( grid->getTileFlag( rowIndex, columnIndex) < STATIC_TILE ){
+				grid->setTileFlag( rowIndex, columnIndex, CLEAR );
+			}
+		}
+	}
 }
 
 // Scans whole grid for full lines
@@ -476,18 +399,20 @@ void CGameArea::isFullLine()
 	for( row_index = 1; row_index < GAMEAREAHEIGHT - 1; row_index++ )
 	{
 		// Check each block in line
-		if( ( gameGrid->getTileFlag( 1, row_index ) > 100 ) && 
-		( gameGrid->getTileFlag( 2, row_index ) > 100 ) &&
-		( gameGrid->getTileFlag( 3, row_index ) > 100 ) &&
-		( gameGrid->getTileFlag( 4, row_index ) > 100 ) &&
-		( gameGrid->getTileFlag( 5, row_index ) > 100 ) &&
-		( gameGrid->getTileFlag( 6, row_index ) > 100 ) &&
-		( gameGrid->getTileFlag( 7, row_index ) > 100 ) &&
-		( gameGrid->getTileFlag( 8, row_index ) > 100 ) &&
-		( gameGrid->getTileFlag( 9, row_index ) > 100 ) &&
-		( gameGrid->getTileFlag( 10, row_index ) > 100 ) ){
+		if( ( gameGrid->getTileFlag( 1, row_index ) > STATIC_TILE ) && 
+		( gameGrid->getTileFlag( 2, row_index ) > STATIC_TILE ) &&
+		( gameGrid->getTileFlag( 3, row_index ) > STATIC_TILE ) &&
+		( gameGrid->getTileFlag( 4, row_index ) > STATIC_TILE ) &&
+		( gameGrid->getTileFlag( 5, row_index ) > STATIC_TILE ) &&
+		( gameGrid->getTileFlag( 6, row_index ) > STATIC_TILE ) &&
+		( gameGrid->getTileFlag( 7, row_index ) > STATIC_TILE ) &&
+		( gameGrid->getTileFlag( 8, row_index ) > STATIC_TILE ) &&
+		( gameGrid->getTileFlag( 9, row_index ) > STATIC_TILE ) &&
+		( gameGrid->getTileFlag( 10, row_index ) > STATIC_TILE ) ){
 			// Increment score
-			gameScore += 50;		
+			gameScore += 50;
+			// increment line counter
+			gameLines++;		
 			//  Remove line and move all blocks above down one
 			removeLine( row_index );
 		}
@@ -506,13 +431,14 @@ void CGameArea::removeLine( int iFullRowIndex )
 
 	column_index = 0;
 
-	// Iterate up through rows and set all static pieces to plus 1 on the y coord
+	// Move all static blocks above the deleted line down one by iterating up through rows and setting
+	// all static pieces to plus 1 on the y coord
 	for( row_index = iFullRowIndex; row_index > 1; row_index-- )
 	{
 		for( column_index = 1; column_index < GAMEAREAWIDTH-1; column_index++ )
 		{
 			// If current block is static shift it down one.
-			if( gameGrid->getTileFlag( column_index, row_index ) > 100 )
+			if( gameGrid->getTileFlag( column_index, row_index ) > STATIC_TILE )
 			{
 				// If its the very bottom row just set as clear, else shift it down one.
 				if( row_index != GAMEAREAHEIGHT-1 ){
@@ -548,7 +474,7 @@ bool CGameArea::collide(){
 			{
 				if( ( currentPiece->getPieceData( currentBlockPiece ) == '1' )
 				&&( gameGrid->getTileFlag( currentPiece->getPosX() + iWidthIndex, 
-						currentPiece->getPosY() + iHeightIndex ) > 100 ))
+						currentPiece->getPosY() + iHeightIndex ) > STATIC_TILE ))
 				{
 					collide = true;	
 				}
@@ -564,3 +490,66 @@ bool CGameArea::collide(){
 	return false;
 }
 
+void CGameArea::putPiece( CGamePiece* piece, CGrid* grid, bool staticMode ){
+	// Prepare the block to be set into the game area as static or not
+	unsigned int blockType = 0;
+	if( staticMode ){
+		blockType = piece->getColor() + 100;	
+	}else{
+		blockType = piece->getColor();	
+	}	
+
+	unsigned int currentBlockPiece = 0;		
+
+	// Iterate through the current block data and set those block for drawing into the grid that are visible
+	for( int rowIndex = 0; rowIndex < piece->getHeight(); rowIndex++)
+	{
+		for( int columnIndex = 0; columnIndex < piece->getWidth(); columnIndex++)
+		{
+			if( piece->getPieceData( currentBlockPiece ) == '1')
+			{
+				grid->setTileFlag( piece->getPosX() + columnIndex, 
+						piece->getPosY() + rowIndex, blockType );
+			}
+		// Next block piece in block array
+		currentBlockPiece++;
+		}
+	}	
+}
+
+void CGameArea::renderGrid( CGrid* grid ){
+	// Draw game area with player piece
+	for( int i = 0; i < grid->getWidth(); i++ ){
+		for( int j = 0; j < grid->getHeight(); j++ ){
+			switch( grid->getTileFlag( i, j) ){
+			case RED:
+			case STATIC_RED:					
+				graphics->draw( grid->getXY(i, j)->x, grid->getXY( i, j)->y, 
+						gametile, SDL_GetVideoSurface(), &redTile );	
+				break;
+			case BLUE:
+			case STATIC_BLUE:
+				graphics->draw( grid->getXY(i, j)->x, grid->getXY( i, j)->y, 
+						gametile, SDL_GetVideoSurface(), &blueTile );
+				break;
+			case GREEN:
+			case STATIC_GREEN:
+				graphics->draw( grid->getXY(i, j)->x, grid->getXY( i, j)->y, 
+						gametile, SDL_GetVideoSurface(), &greenTile );
+				break;
+			case PURPLE:
+			case STATIC_PURPLE:
+				graphics->draw( grid->getXY(i, j)->x, grid->getXY( i, j)->y, 
+						gametile, SDL_GetVideoSurface(), &purpleTile );
+				break;
+			case YELLOW:
+			case STATIC_YELLOW:
+				graphics->draw( grid->getXY(i, j)->x, grid->getXY( i, j)->y, 
+						gametile, SDL_GetVideoSurface(), &yellowTile );
+				break;
+			default:
+				break;
+			}
+		}
+	}	
+}

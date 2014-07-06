@@ -15,7 +15,10 @@ class CGrid{
 	
 		// Return x and y coordinates for a given grid reference	
 		coords* getXY( unsigned int x, unsigned int y );
-			
+		
+		unsigned int getWidth(){ return m_grid_width; }	
+		unsigned int getHeight(){ return m_grid_height; }
+
 		// Get and set flags for each tile in the grid
 		void setTileFlag( unsigned int x, unsigned int y, int flag_code );
 		int getTileFlag( unsigned int x, unsigned int y);
