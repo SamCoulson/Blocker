@@ -39,18 +39,22 @@ int main( int argc, char* args[])
 
 	// Hold references to all the screens
 	std::vector< IScreen* > screens;
+	std::vector< IScreen* >::iterator it;
+	
 
 	// Add the screens in order
-	screens.push_back( highScoreScreen );
-	screens.push_back( gameScreen );
 	screens.push_back( introScreen );
-		
+	screens.push_back( gameScreen );
+	screens.push_back( highScoreScreen );
+	
 	IScreen* currentScreen = NULL;
 	bool isInitialised = false;
 	startTime = SDL_GetTicks();
 
 	// Load up the last screen in the screens vector, the introscreen.
-	currentScreen = screens.back();
+	it = screens.begin();
+	currentScreen = (*it);
+
 	
 	// Game loop
 	while( gameQuit != true)
@@ -68,9 +72,7 @@ int main( int argc, char* args[])
 		SDL_PollEvent( &event );
 	
 		// Get the time at the beginning of the frame	
-		startTime = SDL_GetTicks();// NOTE: Have the game speed be alterable by taking the FPS constant
-		// and modifying it either by adding or subtracting to speed up/ slow down speed
-		// or could do some dela time trick to avoid alter the overall FPS 
+		startTime = SDL_GetTicks();
 		
 		currentScreen->processEvents( &event );
 		currentScreen->update();
@@ -83,13 +85,24 @@ int main( int argc, char* args[])
 			DWORD endTime = startTime + 1000 / FPS;
 			SDL_Delay( endTime - SDL_GetTicks() );
 		}
+
 		// On a screen quitting check what conditions it quits under
 		if( ( currentScreen->requestQuit() ) && ( event.key.keysym.sym == SDLK_ESCAPE ) ){
 			gameQuit = true;
 		}else if( currentScreen->requestQuit() ){
-			screens.pop_back();
-			currentScreen = screens.back();
-			isInitialised = false;
+			// Progress vector pointer to next screen
+			++it;
+
+			// If last screen go back to intro screen
+			if( it == screens.end() ){
+				it = screens.begin();
+			}
+
+			// Make current screen the screen pointed to in vector
+			currentScreen = (*it);
+
+			// Make sure screen is initialised or re-initialised
+			isInitialised = false;	
 		}
 	}
 			

@@ -70,6 +70,7 @@ void CHighScoreScreen::processEvents( SDL_Event* event ){
 				// Finshed entering name
 				inEditMode = false;
 				saveTopScoresToFile(); // Should be in update function
+				quit = true;
 			break;
 			default:
 				break;

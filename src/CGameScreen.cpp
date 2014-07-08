@@ -311,36 +311,12 @@ void CGameArea::checkAndSetLevel()
 			// could just fix it at ten for infitnate play
 		}
 		
+		// Increment amount of lines needed to progess to next level
 		levelLines += 10;
-		
+				
+		// Increment level number
+		gameLevel += 1;
 	}
-/*
-	if( gameScore >= 1000 )
-	{
-		gameSpeed = 250;
-		gameLevel = 1;
-	}
-	if( gameScore >= 2000 )
-	{
-		gameSpeed = 200;
-		gameLevel = 2;
-	}
-	if( gameScore >= 3000 )
-	{
-		gameSpeed = 150;
-		gameLevel = 3;
-	}
-	if( gameScore >= 4000 )
-	{
-		gameSpeed = 100;
-		gameLevel = 4;
-	}
-	if( gameScore >= 5000 )
-	{
-		gameSpeed = 50;
-		gameLevel = 5;
-	}
-	*/
 }
 
 // Utiltiy function to convert game score to a string ready for render
