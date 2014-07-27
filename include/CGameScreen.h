@@ -61,6 +61,7 @@ private:
 	SDL_Surface *gameoverframe;
 	SDL_Surface *pausedframe;
 
+	string fontFile;
 	// Game states	
 	bool quit;
 	bool paused;

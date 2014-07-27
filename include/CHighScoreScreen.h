@@ -28,6 +28,8 @@ class CHighScoreScreen : public IScreen{
 	
 		SDL_Surface *topscoreframe;
 
+		std::string fontFile;
+
 		bool quit;
 
 		bool inEditMode;

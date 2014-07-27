@@ -20,6 +20,8 @@ bool CHighScoreScreen::init(){
 	// Frame for score board
 	topscoreframe = graphics->loadImageFromFile("./images/TopScoreScreenFrame00.png", 255, 0, 255 );	
 
+	fontFile = "freeSans.ttf";
+
 	// Load in the existing scores from file
 	// Needs error checking
 	loadTopScoresFromFile();
@@ -141,7 +143,7 @@ void CHighScoreScreen::render(){
 	std::vector< scoredata >::iterator it;
 
 	// Inital Y location placement for score
-	int rowSpacing = 70;
+	int rowSpacing = 65;
 
 	// Rank in score list
 	int rankNum = 1;
@@ -156,15 +158,22 @@ void CHighScoreScreen::render(){
 		scoreAsString << (*it).score;
 
 		// Draw the line
-		graphics->drawText( rankNumAsString.str(), 100, rowSpacing, "tunga.ttf", 26, 255, greenVal+=10, 0 );
+
+		// Draw rank number
+		graphics->drawText( rankNumAsString.str(), 70, rowSpacing, fontFile, 26, 255, greenVal+=10, 0 );
+
+		// Name of player
 		if( (*it).isNew == true ){
 			// If less than 3 chars append a blinking underscore	
-			graphics->drawText( newName.str(), 130, rowSpacing, "tunga.ttf", 26, 255, greenVal, 0 );
+			graphics->drawText( newName.str(), 110, rowSpacing, fontFile , 26, 255, greenVal, 0 );
 		}else{
-			graphics->drawText( (*it).scorename, 130, rowSpacing, "tunga.ttf", 26, 255, greenVal, 0 );
+			graphics->drawText( (*it).scorename, 110, rowSpacing, fontFile, 26, 255, greenVal, 0 );
 		}
-		graphics->drawText( "..........", 170, rowSpacing, "tunga.ttf", 26, 255, greenVal, 0 );
-		graphics->drawText( scoreAsString.str(), 245, rowSpacing, "tunga.ttf", 26, 255,  greenVal, 0 );
+		// Dotted line between name and score
+		graphics->drawText( "..........", 165, rowSpacing, fontFile, 26, 255, greenVal, 0 );
+
+		// Score
+		graphics->drawText( scoreAsString.str(), 245, rowSpacing, fontFile, 26, 255,  greenVal, 0 );
 
 		// Move down enough for next line
 		rowSpacing += 35;

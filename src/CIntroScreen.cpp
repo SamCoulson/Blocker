@@ -17,6 +17,7 @@ bool CIntroScreen::init(){
 	introscreenframe = graphics->loadImageFromFile( "./images/IntroScreenFrame01.bmp", 255, 0, 255 );
 
 	introTextColour = 1;
+	fontFile = "FreeSans.ttf";
 
 	quit = false;
 }
@@ -55,13 +56,14 @@ void CIntroScreen::update(){
 }
 
 void CIntroScreen::render(){
+
 	// Clear screen
 	graphics->clearScreen( 0, 0, 0 );
 
 	// Draw game frame	
 	graphics->draw( 0, 0, introscreenframe, SDL_GetVideoSurface(), NULL);
 	
-	graphics->drawText( "Press space to start", 100, 300, "tunga.ttf", 30, 255, introTextColour, introTextColour );
+	graphics->drawText( "Press space to start", 70, 300, fontFile, 30, 255, introTextColour, introTextColour );
 	
 	if(introTextColour == 255)
 	{

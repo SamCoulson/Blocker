@@ -25,6 +25,8 @@ class CIntroScreen : public IScreen{
 		CSDLGraphics *graphics;
 		SDL_Surface *introscreenframe;
 
+		std::string fontFile;
+
 		int introTextColour;
 
 		bool quit;

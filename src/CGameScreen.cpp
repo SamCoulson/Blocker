@@ -73,7 +73,10 @@ bool CGameArea::init(){
 	gametile = graphics->loadImageFromFile("./images/TileSet.bmp", 255, 0, 255 );
 
 	gameoverframe = graphics->loadImageFromFile( "./images/GameoverFrame00.bmp", 255, 0, 255 );	
-	
+
+	// Font file name
+	fontFile = "FreeSans.ttf";
+
 	// Spawn first piece
 	currentPiece = new CGamePiece( 4, 0 );	
 
@@ -279,15 +282,15 @@ void CGameArea::render(){
 
 	// Draw the text 'Paused' if game is paused
 	if( paused == true ){
-		graphics->drawText( "Paused", 80, 140, "tunga.ttf", 40, 255, 0, 0  );
+		graphics->drawText( "Paused", 80, 140, fontFile, 40, 255, 0, 0  );
 	}
 
 	//Draw score and level number 
-	graphics->drawText( GetScore(), 260, 10, "tunga.ttf", 40, 255, 0, 0  );
+	graphics->drawText( GetScore(), 260, 5, fontFile, 40, 255, 0, 0  );
 	
-	graphics->drawText( GetLevel(), 260, 80, "tunga.ttf", 40, 255, 0, 0  );	
+	graphics->drawText( GetLevel(), 260, 75, fontFile, 40, 255, 0, 0  );	
 
-	graphics->drawText( GetLines(), 260, 150, "tunga.ttf", 40, 255, 0, 0  );	
+	graphics->drawText( GetLines(), 260, 145, fontFile, 40, 255, 0, 0  );	
 
 	// Show the screen
 	// Or can use update rects
