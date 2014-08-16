@@ -2,7 +2,7 @@
 
 using namespace std;
 
-CGameArea::CGameArea( CSDLGraphics& graphics, CGlobalGameData& gameData ) : IScreen( graphics, gameData ){
+CGameArea::CGameArea( CSDLGraphics& graphics, CGlobalGameData& gameData ) : IScreen( graphics ){
 
 	this->graphics = &graphics;
 	this->gameData = &gameData;

@@ -1,11 +1,11 @@
-#include "../include/CHighScoreScreen.h"
 #include <iostream>
 #include <fstream>
 #include <sstream>
 #include <algorithm>
 #include <string>
+#include "../include/CHighScoreScreen.h"
 
-CHighScoreScreen::CHighScoreScreen( CSDLGraphics& graphics, CGlobalGameData& gameData ) : IScreen( graphics, gameData ){
+CHighScoreScreen::CHighScoreScreen( CSDLGraphics& graphics, CGlobalGameData& gameData ) : IScreen( graphics ){
 	
 	this->graphics = &graphics;
 	this->gameData = &gameData;	

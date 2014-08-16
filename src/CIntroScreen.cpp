@@ -1,6 +1,6 @@
 #include "../include/CIntroScreen.h"
 
-CIntroScreen::CIntroScreen( CSDLGraphics& graphics, CGlobalGameData& globalGameData ) : IScreen( graphics, globalGameData ){
+CIntroScreen::CIntroScreen( CSDLGraphics& graphics, CGlobalGameData& globalGameData ) : IScreen( graphics ){
 	
 	this->graphics = &graphics;	
 	introscreenframe = NULL;

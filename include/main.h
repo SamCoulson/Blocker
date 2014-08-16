@@ -8,8 +8,8 @@
 #include <sstream>
 #include <string>
 
-#include "CSDLGraphics.h"
-#include "CGrid.h"
+#include "../../gamelibrary/include/CSDLGraphics.h"
+#include "../../gamelibrary/include/CGrid.h"
 #include "CGamePiece.h"
 #include "CIntroScreen.h"
 #include "CGameScreen.h"

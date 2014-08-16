@@ -1,8 +1,9 @@
 #ifndef INC_INTROSCREEN_H
 #define INC_INTROSCREEN_H
 
-#include "../include/CSDLGraphics.h"
-#include "../include/IScreen.h"
+#include "../../gamelibrary/include/CSDLGraphics.h"
+#include "../../gamelibrary/include/IScreen.h"
+#include "../include/CGlobalGameData.h"
 
 class CIntroScreen : public IScreen{
 	public:

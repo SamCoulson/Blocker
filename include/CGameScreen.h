@@ -1,10 +1,11 @@
 #ifndef INC_CGAMEAREA_H
 #define INC_CGAMEAREA_H
 
-#include "../include/CSDLGraphics.h"
-#include "../include/CGrid.h"
+#include "../../gamelibrary/include/CSDLGraphics.h"
+#include "../../gamelibrary/include/CGrid.h"
+#include "../../gamelibrary/include/IScreen.h"
 #include "../include/CGamePiece.h"
-#include "../include/IScreen.h"
+#include "../include/CGlobalGameData.h"
 
 // Should be a width of 10, least 22 with anything above 20 hidden
 // according to http://tetris.wikia.com/wiki/Tetris_Guideline

@@ -1,7 +1,7 @@
 #ifndef INC_CGAMEPIECE_H
 #define INC_CGAMEPIECE_H
 
-#include "CGrid.h"
+#include "../../gamelibrary/include/CGrid.h"
 #include <time.h>
 
 #define CLEAR 			0

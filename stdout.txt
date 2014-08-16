@@ -5,7 +5,10 @@ Video subsystem initialised
 Checking requested screen mode: 400 x 440 at 32 BPP
 Video mode set to 400 x 440 at 32 Bpp with flags SDL_SWSURFACE 
 Trying to load ./images/IntroScreenFrame01.bmp
+Image ./images/IntroScreenFrame01.bmp loaded successfully
 Trying to load ./images/GameFrameRounded.bmp
+Image ./images/GameFrameRounded.bmp loaded successfully
 Trying to load ./images/TileSet.bmp
+Image ./images/TileSet.bmp loaded successfully
 Trying to load ./images/GameoverFrame00.bmp
-Trying to load ./images/TopScoreScreenFrame00.png
+Image ./images/GameoverFrame00.bmp loaded successfully
