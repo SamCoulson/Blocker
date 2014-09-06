@@ -2,8 +2,8 @@
 #define INC_CHIGHSCORESCREEN_H
 #include <vector>
 #include <sstream>
-#include "../gamelibrary/include/CSDLGraphics.h"
-#include "../gamelibrary/include/IScreen.h"
+#include "../GameLibrary/include/CSDLGraphics.h"
+#include "../GameLibrary/include/IScreen.h"
 #include "../include/CGlobalGameData.h"
 
 class CHighScoreScreen : public IScreen{
