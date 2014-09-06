@@ -10,6 +10,8 @@ The freeSans true type font file are from https://savannah.gnu.org/projects/free
 The build environment is:
 gcc (GCC) 4.4.7 20111023 (prerelease) [svn/rev.180339 - mingw-w64/oz]
 
+This game requires my gamelibrary in order to run, see relevant repository.
+
 To build:
 
 gmake
