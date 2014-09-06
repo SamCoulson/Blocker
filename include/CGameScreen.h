@@ -1,9 +1,9 @@
 #ifndef INC_CGAMEAREA_H
 #define INC_CGAMEAREA_H
 
-#include "../../gamelibrary/include/CSDLGraphics.h"
-#include "../../gamelibrary/include/CGrid.h"
-#include "../../gamelibrary/include/IScreen.h"
+#include "../gamelibrary/include/CSDLGraphics.h"
+#include "../gamelibrary/include/CGrid.h"
+#include "../gamelibrary/include/IScreen.h"
 #include "../include/CGamePiece.h"
 #include "../include/CGlobalGameData.h"
 

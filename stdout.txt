@@ -12,13 +12,3 @@ Trying to load ./images/TileSet.bmp
 Image ./images/TileSet.bmp loaded successfully
 Trying to load ./images/GameoverFrame00.bmp
 Image ./images/GameoverFrame00.bmp loaded successfully
-Trying to load ./images/TopScoreScreenFrame00.png
-Image ./images/TopScoreScreenFrame00.png loaded successfully
-Trying to load ./images/IntroScreenFrame01.bmp
-Image ./images/IntroScreenFrame01.bmp loaded successfully
-Trying to load ./images/GameFrameRounded.bmp
-Image ./images/GameFrameRounded.bmp loaded successfully
-Trying to load ./images/TileSet.bmp
-Image ./images/TileSet.bmp loaded successfully
-Trying to load ./images/GameoverFrame00.bmp
-Image ./images/GameoverFrame00.bmp loaded successfully
